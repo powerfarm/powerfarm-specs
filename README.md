@@ -273,3 +273,24 @@ A specification change MUST NOT be justified only by implementation convenience 
 A component is conforming because its observable behavior satisfies a specification, not because it uses a particular library, database, runtime, programming language, or vendor.
 
 Reference implementations are evidence about a specification. They are not the specification.
+
+## Temporal continuity and cognitive turns
+
+- [Heartime Contract v0](specs/HEARTIME_CONTRACT_v0.md): temporal obligations, occurrences and dispositions, planning coverage, return deadlines, explicit fallback and the restart account.
+- [Attention and Context v0](specs/ATTENTION_CONTEXT_v0.md): Cards and immutable WakePacks, occupancy receipts and handoff through institutional state, without a new subsystem.
+- [Executability Contract v0 §17.1–17.3](specs/EXECUTABILITY_CONTRACT_v0.md): technical recovery routing, the Direction boundary with its decision record, and the delegated-mandate representation gap.
+- [Go Language Profile](profiles/GO.md): proposed profile for the new Go implementation.
+
+These additions derive from the same canon. They do not make Heartime a planner or the prompt a durable handoff. Examples are not Registry admission or grants.
+
+## Validation
+
+```bash
+python -m pip install --no-deps -r tools/requirements.txt
+```
+
+```bash
+python tools/validate.py
+```
+
+The validator checks schemas, examples by `kind`, semantic invariants the schemas cannot express, the conformance catalog and local links. It runs on every pull request. Behavioral conformance is proven by implementations.
