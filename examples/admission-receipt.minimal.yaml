@@ -1,0 +1,38 @@
+apiVersion: powerfarm.specs/v0
+kind: AdmissionReceipt
+metadata:
+  id: 01994f3e-7c00-7b5a-8000-000000000001
+  contractId: pf.contract.app.example-notes
+  generation: 1
+  subject: pf.example-notes
+  producer: pf.identity
+  recordedAt: "2026-09-16T05:31:00Z"
+spec:
+  contractDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  outcome: passed
+  checks:
+    - name: source.exact
+      status: passed
+      observedAt: "2026-09-16T05:30:10Z"
+      message: Exact declared source revision resolved.
+    - name: placement.materialized
+      status: passed
+      observedAt: "2026-09-16T05:30:20Z"
+    - name: stores.created
+      status: passed
+      observedAt: "2026-09-16T05:30:30Z"
+      evidence:
+        - id: store-genesis:pf.store.example-notes.primary
+          provider: pf.example-notes
+          domain: admission
+          subject: pf.example-notes
+          observedAt: "2026-09-16T05:30:30Z"
+    - name: schemas.applied
+      status: passed
+      observedAt: "2026-09-16T05:30:35Z"
+    - name: health.verified
+      status: passed
+      observedAt: "2026-09-16T05:30:55Z"
+  materialization:
+    place: pf.app-park.8gb
+    relativePath: example-notes

@@ -1,0 +1,63 @@
+apiVersion: powerfarm.specs/v0
+kind: ExecutabilityContract
+metadata:
+  id: pf.contract.exec.coloured-places.census
+  generation: 1
+  subject: pf.coloured-places
+  owner: pf.office.continuity
+  issuedAt: "2026-09-16T05:30:00Z"
+  summary: Periodically census recognized applications and record observational evidence.
+spec:
+  guards:
+    temporal:
+      ref:
+        provider: pf.heartime
+        contract:
+          id: pf.contract.heartime.coloured-places.census
+          generation: 1
+        predicate: recurrence.due
+        parameters:
+          every: PT1M
+        expected: true
+    observational:
+      literal: true
+  policy:
+    triggerMode: edge
+    retrigger: per-evidence-change
+    temporalBeforeObservation: retain
+    observationBeforeTemporal: retain
+  claim:
+    mode: exclusive
+    keyScope: activation
+    lease: PT45S
+    onLeaseLoss: verify
+  effect:
+    intent: Probe the Registry-defined expected population and publish census observations.
+    graph:
+      standard: open-workflow/1.0.3
+      content:
+        digest: sha256:8888888888888888888888888888888888888888888888888888888888888888
+        mediaType: application/json
+        size: 4096
+  verification:
+    required: true
+    predicate:
+      ref:
+        provider: pf.antenna
+        contract:
+          id: pf.contract.antenna.coloured-places.observability
+          generation: 1
+        predicate: census.observation-recorded
+        expected: true
+        maxAge: PT2M
+    timeout: PT45S
+    onTimeout: uncertain
+  retry:
+    maxAttempts: 3
+    strategy: effect-certainty
+    backoff:
+      initial: PT2S
+      maximum: PT30S
+      multiplier: 2
+  uncertainty:
+    onUnknown: verify-before-retry

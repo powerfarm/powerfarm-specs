@@ -1,0 +1,63 @@
+apiVersion: powerfarm.specs/v0
+kind: ExecutabilityContract
+metadata:
+  id: pf.contract.exec.example-webhook
+  generation: 1
+  subject: pf.example-webhook-handler
+  owner: pf.office.software
+  issuedAt: "2026-09-16T05:30:00Z"
+  summary: Execute once for each accepted webhook receipt.
+spec:
+  guards:
+    temporal:
+      literal: true
+    observational:
+      ref:
+        provider: pf.antenna
+        contract:
+          id: pf.contract.antenna.example-webhook
+          generation: 1
+        predicate: receipt.accepted
+        parameters:
+          lane: event
+          transport: http
+        expected: true
+  policy:
+    triggerMode: edge
+    retrigger: per-evidence-change
+    temporalBeforeObservation: retain
+    observationBeforeTemporal: retain
+  claim:
+    mode: exclusive
+    keyScope: activation
+    lease: PT30S
+    onLeaseLoss: verify
+  effect:
+    intent: Process one accepted webhook through the declared executable graph.
+    graph:
+      standard: open-workflow/1.0.3
+      content:
+        digest: sha256:7777777777777777777777777777777777777777777777777777777777777777
+        mediaType: application/json
+        size: 2048
+  verification:
+    required: true
+    predicate:
+      ref:
+        provider: pf.antenna
+        contract:
+          id: pf.contract.antenna.example-webhook
+          generation: 1
+        predicate: delivery.observed
+        expected: true
+    timeout: PT30S
+    onTimeout: uncertain
+  retry:
+    maxAttempts: 3
+    strategy: effect-certainty
+    backoff:
+      initial: PT1S
+      maximum: PT30S
+      multiplier: 2
+  uncertainty:
+    onUnknown: verify-before-retry

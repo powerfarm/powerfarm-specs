@@ -1,0 +1,76 @@
+apiVersion: powerfarm.specs/v0
+kind: ExecutabilityContract
+metadata:
+  id: pf.contract.exec.example-retry
+  generation: 1
+  subject: pf.example-worker
+  owner: pf.office.continuity
+  issuedAt: "2026-09-16T05:30:00Z"
+  summary: Retry only when the retry time has arrived and the prior effect remains unverified.
+spec:
+  guards:
+    temporal:
+      ref:
+        provider: pf.heartime
+        contract:
+          id: pf.contract.heartime.example-retry
+          generation: 1
+        predicate: retry-at.reached
+        expected: true
+    observational:
+      ref:
+        provider: pf.antenna
+        contract:
+          id: pf.contract.antenna.example-effect-status
+          generation: 1
+        predicate: effect.verified
+        expected: false
+  policy:
+    triggerMode: edge
+    retrigger: after-terminal
+    temporalBeforeObservation: retain
+    observationBeforeTemporal: retain
+    expiration:
+      guard:
+        ref:
+          provider: pf.heartime
+          contract:
+            id: pf.contract.heartime.example-retry
+            generation: 1
+          predicate: retry-window.expired
+          expected: true
+      reason: Retry window expired.
+  claim:
+    mode: exclusive
+    keyScope: activation
+    lease: PT30S
+    onLeaseLoss: verify
+  effect:
+    intent: Reconcile the uncertain effect before deciding whether dispatch may repeat.
+    graph:
+      standard: open-workflow/1.0.3
+      content:
+        digest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+        mediaType: application/json
+        size: 3072
+  verification:
+    required: true
+    predicate:
+      ref:
+        provider: pf.antenna
+        contract:
+          id: pf.contract.antenna.example-effect-status
+          generation: 1
+        predicate: effect.verified
+        expected: true
+    timeout: PT30S
+    onTimeout: uncertain
+  retry:
+    maxAttempts: 4
+    strategy: effect-certainty
+    backoff:
+      initial: PT2S
+      maximum: PT1M
+      multiplier: 2
+  uncertainty:
+    onUnknown: verify-before-retry
