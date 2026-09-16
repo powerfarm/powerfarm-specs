@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Powerfarm Direction Decision v0",
+  "description": "What a human away from the terminal needs at a genuine Direction or legitimacy boundary: what happened, the consequence, the recovery already attempted and the exact decision. Technical failure never produces one.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "responsibility",
+    "raisedAt",
+    "reviewAt",
+    "whatHappened",
+    "consequence",
+    "attemptedRecovery",
+    "exactDecision",
+    "boundary"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "powerfarm.specs/v0"
+    },
+    "kind": {
+      "const": "DirectionDecision"
+    },
+    "responsibility": {
+      "$ref": "common.schema.json#/$defs/contractRef"
+    },
+    "raisedAt": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$"
+    },
+    "reviewAt": {
+      "description": "When the contained responsibility is re-evaluated if no decision arrives.",
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$"
+    },
+    "whatHappened": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "consequence": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "attemptedRecovery": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      }
+    },
+    "exactDecision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "boundary": {
+      "type": "string",
+      "enum": [
+        "objective-change",
+        "external-commitment",
+        "material-new-budget",
+        "human-only-authority",
+        "unavailable-human-controlled-credential",
+        "accept-material-consequence"
+      ]
+    }
+  }
+}

@@ -1,0 +1,114 @@
+apiVersion: powerfarm.specs/v0
+kind: ExecutabilityContract
+metadata:
+  id: pf.contract.exec.build-powerfarm
+  generation: 1
+  subject: pf.powerfarm
+  owner: pf.danvoulez
+  issuedAt: "2026-09-16T10:00:00Z"
+  summary: >-
+    Continue building Powerfarm under current Direction by extending a verified
+    traceability dataset from current institutional state, preserving evidence
+    and preparing the next bounded period. The graph carries the technical
+    recovery route: primary occupant, diagnosis, alternate route, commit or
+    containment, and the recorded return.
+spec:
+  guards:
+    temporal:
+      ref:
+        provider: pf.heartime
+        contract:
+          id: pf.contract.heartime.build-powerfarm
+          generation: 1
+        predicate: occurrence.due
+        parameters:
+          kind: work
+        expected: true
+    observational:
+      literal: true
+  policy:
+    triggerMode: edge
+    retrigger: per-evidence-change
+    temporalBeforeObservation: retain
+    observationBeforeTemporal: retain
+  claim:
+    mode: exclusive
+    keyScope: activation
+    lease: PT10M
+    onLeaseLoss: verify
+  effect:
+    intent: >-
+      Occupy one bounded turn, validate the proposal against the actual test
+      source and requirements, persist the extended dataset and the next period,
+      or contain the turn with a future review.
+    graph:
+      standard: open-workflow/1.0.3
+      content:
+        digest: sha256:b451b33cc34ef67f11f6cc4f10aac59cc0718d5349c446aafd429c859665ea50
+        mediaType: application/json
+        size: 612
+    capabilityProfiles:
+    - content:
+        digest: sha256:556edfef41e44f537530794a044d3d8cafa9b438319a58248bdb856bd9faa4bc
+        mediaType: application/json
+        size: 566
+    - content:
+        digest: sha256:cd88cbe4b3d4e724b16ad7ce963c6123d8976020ceeb8e72e146e4ff2907cebb
+        mediaType: application/json
+        size: 569
+    - content:
+        digest: sha256:46d3c026f63d763d9c8a1793ffdfd429cc9e7d2bcf7a0ad41e11b65d8e64d699
+        mediaType: application/json
+        size: 572
+    - content:
+        digest: sha256:fdbf4fdb13b86b73efb2ec7e2a2c09707b28a41abe4acf2368dd9663ac5ecc26
+        mediaType: application/json
+        size: 563
+    - content:
+        digest: sha256:04ef735ce1fad1abbc2f7f6af682a82488841aa295917887c6e7d906d8e3897b
+        mediaType: application/json
+        size: 566
+    - content:
+        digest: sha256:28adcaf2d6b5b890137e0c46776c05a013af061ff0c58fe701c2c8251ad91d21
+        mediaType: application/json
+        size: 563
+    - content:
+        digest: sha256:10541ecbaf660442d1b24da25b63c17e576259226dca8ac931032fa0a370cd51
+        mediaType: application/json
+        size: 400
+  verification:
+    required: true
+    predicate:
+      ref:
+        provider: pf.continuity
+        contract:
+          id: pf.contract.exec.build-powerfarm
+          generation: 1
+        predicate: dataset.persisted-or-contained
+        expected: true
+    timeout: PT1M
+    onTimeout: uncertain
+  retry:
+    maxAttempts: 2
+    strategy: effect-certainty
+    backoff:
+      initial: PT1S
+      maximum: PT10S
+      multiplier: 2
+  uncertainty:
+    onUnknown: verify-before-retry
+x-mandate:
+  description: >-
+    Delegated authority of whoever occupies the turn: objective, capabilities,
+    invocation, time, context and planning bounds, output allowance and
+    Direction boundaries. ExecutabilityContract v0 has no term for these; see
+    specs/EXECUTABILITY_CONTRACT_v0.md section 17.3.
+  content:
+    digest: sha256:2d2c695ddc8ab4aebf7bd87fd1f7c415b1487ab16f81a588a2ed2a8345775d0d
+    mediaType: application/json
+    size: 1025
+x-template:
+  content:
+    digest: sha256:b5d20136fb4130456654b267abe825f5f7dd2271618cdc4b537af79498c9becb
+    mediaType: text/plain
+    size: 894

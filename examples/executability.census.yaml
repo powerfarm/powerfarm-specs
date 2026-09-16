@@ -36,9 +36,9 @@ spec:
     graph:
       standard: open-workflow/1.0.3
       content:
-        digest: sha256:8888888888888888888888888888888888888888888888888888888888888888
+        digest: sha256:d97a2d8a511b383a9ab20721b03545cac84bb996c6261196ada461a43a4ecc7a
         mediaType: application/json
-        size: 4096
+        size: 371
   verification:
     required: true
     predicate:

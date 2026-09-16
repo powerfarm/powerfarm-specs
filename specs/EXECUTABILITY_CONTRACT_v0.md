@@ -468,6 +468,56 @@ This contract-level setting MUST NOT weaken a stricter capability effect class.
 
 For example, `safe-retry` cannot make an irreversible capability replayable.
 
+### 17.1 Recovery routing
+
+Technical failure of an activation follows a technical route. It MUST NOT default to asking a human to diagnose or repair software. The conceptual route is:
+
+```text
+executor
+  -> diagnosis
+  -> authorized local recovery
+  -> alternate execution route
+  -> alternate technical capability or intelligence
+  -> containment
+  -> durable unresolved state
+  -> future re-evaluation
+```
+
+Recovery stages that matter to the effect SHOULD be explicit nodes of the executable graph, so the route is inspectable, journaled and verified like any other transition. They MUST NOT be hidden inside a scheduler or inside an occupant's reasoning.
+
+Every recovery path MUST be bounded where relevant by:
+
+- attempts, including model or route invocations, persisted before each attempt so a restart never refunds them;
+- cost and time;
+- effect class and uncertainty handling (sections 15-17);
+- authority, rechecked at each stage;
+- concurrency, including exclusive ownership of the responsibility's state.
+
+Containment MUST preserve institutional state, record the unresolved condition with evidence, and arm a future evaluation through the temporal relationship. A contained activation is not a success.
+
+### 17.2 Direction boundary
+
+A human decision is requested only at a genuine Direction or legitimacy boundary, consistent with PF-03's rule to escalate for authority, irreversible consequence, material risk or cross-system conflict, not by habit. Recognized boundaries are:
+
+- `objective-change`;
+- `external-commitment`;
+- `material-new-budget`;
+- `human-only-authority` (legal or institutional);
+- `unavailable-human-controlled-credential`, when no lawful alternate route exists;
+- `accept-material-consequence`.
+
+The boundaries admissible for a responsibility are declared in its delegated terms. The request is a `DirectionDecision` record (`schemas/direction-decision-v0.schema.json`) suitable for a human away from the terminal. It MUST reduce to four answers: what happened, what consequence now exists, what has already been attempted, and the exact decision required. It MUST name the responsibility, the boundary and when the contained responsibility is re-evaluated if no decision arrives. It MUST NOT ask for technical debugging.
+
+Producing the record does not pause other responsibilities and does not constitute a notification system. Delivery to the human is a separate relationship.
+
+An execution route that is refused for credential, quota or budget reasons SHOULD report that refusal distinctly from technical failure, so the boundary is established by evidence rather than inferred from free text.
+
+### 17.3 Delegated mandate
+
+When an activation is occupied by an intelligence, its bounded delegated authority includes terms that ExecutabilityContract v0 does not represent: objective, admitted capabilities, invocation, time and context budgets, output allowance, planning terms for the next period, and admissible Direction boundaries.
+
+v0 carries these terms as an immutable content reference in an `x-` extension, as in `examples/executability.build-powerfarm.yaml`. This is recorded evidence of a representation gap, not a new Responsibility abstraction. A first-class term SHOULD be specified only after more than one real responsibility shows the same need.
+
 ## 18. Verification `V`
 
 Verification determines what Powerfarm may assert after attempted materialization.
@@ -669,4 +719,5 @@ See:
 
 - `examples/executability.webhook.yaml`;
 - `examples/executability.census.yaml`;
-- `examples/executability.retry.yaml`.
+- `examples/executability.retry.yaml`;
+- `examples/executability.build-powerfarm.yaml`: a real work responsibility with its recovery graph and delegated mandate.
