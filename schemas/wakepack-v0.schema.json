@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Powerfarm WakePack v0",
+  "description": "Immutable manifest of the working set compiled for one cognitive turn. Structural validity does not establish authority; mandatory roles contracts, authority, constraints and state are checked semantically.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "turnId",
+    "intelligence",
+    "responsibility",
+    "capturedAt",
+    "compiler",
+    "mandatory",
+    "optional",
+    "cards",
+    "omitted",
+    "context",
+    "budgetBytes",
+    "usedBytes"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "powerfarm.specs/v0"
+    },
+    "kind": {
+      "const": "WakePack"
+    },
+    "turnId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "intelligence": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Route selected for the turn. Only the invocation receipt proves what ran."
+    },
+    "responsibility": {
+      "$ref": "common.schema.json#/$defs/contractRef"
+    },
+    "capturedAt": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$"
+    },
+    "compiler": {
+      "$ref": "common.schema.json#/$defs/contentRef"
+    },
+    "template": {
+      "$ref": "common.schema.json#/$defs/contentRef"
+    },
+    "mandatory": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    },
+    "optional": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/card"
+      }
+    },
+    "omitted": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subject",
+          "reason"
+        ],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "context": {
+      "$ref": "common.schema.json#/$defs/contentRef"
+    },
+    "budgetBytes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "usedBytes": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "content",
+        "reason"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content": {
+          "$ref": "common.schema.json#/$defs/contentRef"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "subject",
+        "responsibility",
+        "reason",
+        "evidence",
+        "salience"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1
+        },
+        "responsibility": {
+          "$ref": "common.schema.json#/$defs/contractRef"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "contradiction",
+            "due",
+            "failure",
+            "opportunity",
+            "change",
+            "unresolved"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/contentRef"
+          }
+        },
+        "salience": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$"
+        }
+      }
+    }
+  }
+}

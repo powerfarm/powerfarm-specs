@@ -186,3 +186,89 @@ cases:
     title: Unrecognized speaker remains unrecognized
     given: Antenna receives valid signals from an entity absent from current Registry recognition.
     expect: The arrival is preserved as observational evidence but does not create institutional identity or authority.
+
+  - id: HEART-001
+    area: heartime
+    title: Planning review precedes coverage expiry
+    given: A responsibility enters period N with valid coverage.
+    expect: A review is durable before expiry and a successful renewal atomically arms period N+1.
+  - id: HEART-002
+    area: heartime
+    title: Failed planning has explicit fallback
+    given: Coverage expires without a valid renewal.
+    expect: Ordinary work is suppressed, contractual fallback is emitted, and another review remains due.
+  - id: HEART-003
+    area: heartime
+    title: Kill after occurrence commit
+    given: SIGKILL occurs after occurrence/evidence/outbox/next deadline commit and before publication.
+    expect: Restart exposes the same occurrence and pending delivery with no duplicate semantic identity.
+  - id: HEART-004
+    area: heartime
+    title: Contractual catch-up
+    given: Several nominal instants pass during downtime under all, latest, and skip contracts.
+    expect: All retains bounded batches without losing backlog, latest records coalesced coverage, and skip records omissions.
+  - id: HEART-005
+    area: heartime
+    title: Contractual overlap
+    given: Prior published work remains unresolved when another occurrence is due.
+    expect: Allow, defer and coalesce control publication as declared without treating silence as completion.
+  - id: HEART-006
+    area: heartime
+    title: Acknowledgement is not verification
+    given: Delivery returns success and the process restarts before execution evidence arrives.
+    expect: Status reports possibly executed and unresolved; a return deadline remains and no effect success is invented.
+  - id: HEART-007
+    area: heartime
+    title: Pause and supersession preserve coverage
+    given: An obligation is paused or replaced while a published occurrence is unresolved.
+    expect: Its resume/review remains durable and historical occurrences retain their original terms.
+  - id: HEART-008
+    area: heartime
+    title: Restart account answers from durable state
+    given: The evaluating process is killed after an occurrence was committed, and again after a delivery attempt was recorded but before any acknowledgement.
+    expect: After restart the ledger alone states what was due, what was emitted, what may have executed, what is unresolved, what is next with overdue marking, and that no active obligation lacks a future evaluation.
+  - id: HEART-009
+    area: heartime
+    title: Obligations stay bounded and end explicitly
+    given: A receiver is unreachable for many review intervals, a reviewed occurrence is resolved late, planning coverage ends, and another obligation expires or is retired.
+    expect: One undelivered review per parent absorbs later deadlines, moot reviews and undeliverable work lapse with recorded reasons, and every return still owed by delivered work keeps its review.
+  - id: ATTN-003
+    area: attention
+    title: A cognitive turn is reconstructable
+    given: A WakePack is compiled with mandatory material, Cards and optional items under a byte budget, and one referenced object is later altered.
+    expect: Every presented item is recoverable byte-for-byte from the compiled context, every omission carries its reason, the budget accounting matches the context, the invocation receipt identifies what ran without credentials, and the altered object is rejected.
+  - id: CENSUS-002
+    area: census
+    title: A routed observation is not a recorded observation
+    given: Antenna returns a receipt for census observations while the service run is still in progress or preserved different bytes.
+    expect: Verification succeeds only after independent retrieval shows a completed run preserving the exact recorded payload digest; otherwise reconciliation does not run and the activation is contained or uncertain.
+  - id: ATTN-001
+    area: attention
+    title: Mandatory context does not compete for salience
+    given: The context budget cannot fit authority and restrictions.
+    expect: Compilation fails rather than omitting mandatory terms.
+  - id: ATTN-002
+    area: attention
+    title: Card expiry does not retire responsibility
+    given: A discrepancy Card expires before its underlying failure is resolved.
+    expect: Evidence, failure history and next temporal evaluation remain addressable.
+  - id: TURN-001
+    area: continuity
+    title: Independent intelligence succession
+    given: Occupant A changes durable institutional artifacts, then a fresh occupant B receives only a new WakePack and referenced state.
+    expect: B continues and produces independently verified work without A conversation or narrative handoff.
+  - id: TURN-002
+    area: recovery
+    title: Technical recovery does not require human engineering
+    given: The primary executor fails under a bounded recovery contract.
+    expect: Diagnosis, authorized fallback or containment is recorded with finite limits and future evaluation.
+  - id: TURN-003
+    area: recovery
+    title: Genuine Direction boundary
+    given: No authorized technical route can resolve a material Direction or legitimacy choice.
+    expect: A record identifies what happened, consequence, attempted recovery and exact decision without asking for terminal debugging.
+  - id: CENSUS-001
+    area: census
+    title: Cohort and mismatch classes are reconstructable
+    given: Recognized population changes during a sweep with known, misplaced, absent, unknown, unrecognized and explicitly prohibited observations.
+    expect: The frozen cohort governs that sweep; classes remain distinct and no repair authority follows from detection.

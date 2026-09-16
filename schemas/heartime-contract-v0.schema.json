@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Powerfarm Heartime Contract v0",
+  "description": "One temporal obligation of an existing responsibility contract. Temporal evidence produced under these terms is never a grant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "powerfarm.specs/v0"
+    },
+    "kind": {
+      "const": "HeartimeContract"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "generation",
+        "subject",
+        "owner"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/contractId"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "subject": {
+          "$ref": "common.schema.json#/$defs/entityId"
+        },
+        "owner": {
+          "$ref": "common.schema.json#/$defs/entityId"
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "obligationId",
+        "responsibility",
+        "recurrence",
+        "graceSeconds",
+        "catchUp",
+        "maxBatch",
+        "overlap",
+        "reviewAfterSeconds",
+        "handoff",
+        "fallback",
+        "planning"
+      ],
+      "properties": {
+        "obligationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "responsibility": {
+          "$ref": "common.schema.json#/$defs/contractRef"
+        },
+        "recurrence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "anchor",
+            "everySeconds"
+          ],
+          "properties": {
+            "anchor": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$"
+            },
+            "everySeconds": {
+              "description": "0 declares a one-shot obligation.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 315360000
+            }
+          }
+        },
+        "graceSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 315360000
+        },
+        "catchUp": {
+          "type": "string",
+          "enum": [
+            "all",
+            "latest",
+            "skip"
+          ]
+        },
+        "maxBatch": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "overlap": {
+          "type": "string",
+          "enum": [
+            "allow",
+            "defer",
+            "coalesce"
+          ]
+        },
+        "reviewAfterSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 315360000
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$"
+        },
+        "handoff": {
+          "$ref": "common.schema.json#/$defs/contractRef"
+        },
+        "fallback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "reviewAfterSeconds",
+            "handoff"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "continue_previous",
+                "reduce_scope",
+                "retry_at",
+                "alternate_planner",
+                "safe_mode",
+                "suspend"
+              ]
+            },
+            "reviewAfterSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 315360000
+            },
+            "handoff": {
+              "$ref": "common.schema.json#/$defs/contractRef"
+            }
+          }
+        },
+        "planning": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "planValidThrough",
+            "nextPlanningReviewAt",
+            "reviewEverySeconds",
+            "handoff"
+          ],
+          "properties": {
+            "planValidThrough": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$"
+            },
+            "nextPlanningReviewAt": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$"
+            },
+            "reviewEverySeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 315360000
+            },
+            "handoff": {
+              "$ref": "common.schema.json#/$defs/contractRef"
+            }
+          }
+        }
+      }
+    }
+  }
+}
