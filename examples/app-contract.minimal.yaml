@@ -1,0 +1,72 @@
+apiVersion: powerfarm.specs/v0
+kind: AppContract
+metadata:
+  id: pf.contract.app.example-notes
+  generation: 1
+  subject: pf.example-notes
+  owner: pf.office.software
+  issuedAt: "2026-09-16T05:30:00Z"
+  summary: Minimal illustrative application admitted into an App Park.
+spec:
+  source:
+    artifact:
+      artifactId: pf.software.example-notes
+      version: 0.1.0
+      digest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    repository: https://example.invalid/powerfarm/example-notes
+    revision: 0123456789abcdef0123456789abcdef01234567
+    path: .
+    snapshot:
+      digest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+      mediaType: application/vnd.powerfarm.source-tree+json
+      size: 1840
+  placement:
+    place: pf.app-park.8gb
+    relativePath: example-notes
+  runtime:
+    kind: process
+    entrypoint: ./bin/example-notes
+  authentication:
+    principal: pf.example-notes
+    oauth:
+      required: false
+  stateStores:
+    - id: pf.store.example-notes.primary
+      engine: sqlite
+      purpose: Authoritative application notes.
+      locator:
+        place: pf.app-park.8gb
+        relativePath: example-notes/state/app.db
+      schema:
+        version: 1
+        content:
+          digest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+          mediaType: application/sql
+          size: 1290
+      authoritativeFor:
+        - example-notes.notes
+      durability: local-durable
+      snapshotPolicy:
+        mode: periodic
+        interval: PT24H
+      searchable: true
+      sensitivity: internal
+      migrationAuthority: pf.office.software
+  content:
+    produces:
+      - kind: notes-snapshot
+        mediaType: application/vnd.powerfarm.notes+json
+    consumes: []
+  capabilities:
+    provides: []
+    consumes: []
+  relationships: []
+  lifecycle:
+    desiredState: active
+  admission:
+    requirements:
+      - source.exact
+      - placement.materialized
+      - stores.created
+      - schemas.applied
+      - health.verified

@@ -1,0 +1,111 @@
+# Illustrative target-state contract. Digests and source revision are placeholders
+# until generated from an actual admission candidate.
+apiVersion: powerfarm.specs/v0
+kind: AppContract
+metadata:
+  id: pf.contract.app.coloured-places
+  generation: 1
+  subject: pf.coloured-places
+  owner: pf.danvoulez
+  issuedAt: "2026-09-16T05:30:00Z"
+  summary: Coloured Places operator projection over recognized population and evidence.
+spec:
+  source:
+    artifact:
+      artifactId: pf.software.coloured-places
+      version: 0.5.1
+      digest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+    repository: https://github.com/powerfarm/powerfarm-coloured-places
+    revision: "1111111111111111111111111111111111111111"
+    path: .
+    snapshot:
+      digest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+      mediaType: application/vnd.powerfarm.source-tree+json
+      size: 4916000
+  placement:
+    place: pf.app-park.8gb
+    relativePath: coloured-places
+  runtime:
+    kind: node
+    entrypoint: npm start
+    healthCapability: pf.capability.coloured-places.health
+  authentication:
+    principal: pf.coloured-places
+    oauth:
+      required: true
+      profile: powerfarm-identity
+      clientId: pf.coloured-places
+  stateStores:
+    - id: pf.store.coloured-places.primary
+      engine: sqlite
+      purpose: Local projection state and health history owned by Coloured Places.
+      locator:
+        place: pf.app-park.8gb
+        relativePath: coloured-places/state/coloured-places.db
+      schema:
+        version: 1
+        migrationDigest: sha256:6666666666666666666666666666666666666666666666666666666666666666
+      authoritativeFor:
+        - coloured-places.projection-state
+        - coloured-places.health-history
+      durability: local-durable
+      snapshotPolicy:
+        mode: periodic
+        interval: PT24H
+      searchable: true
+      sensitivity: internal
+      migrationAuthority: pf.coloured-places
+  content:
+    produces:
+      - kind: observability-snapshot
+        mediaType: application/vnd.powerfarm.observability+json
+    consumes:
+      - kind: registry-population
+        mediaType: application/vnd.powerfarm.registry-population+json
+      - kind: observational-evidence
+        mediaType: application/vnd.powerfarm.evidence+json
+      - kind: temporal-evidence
+        mediaType: application/vnd.powerfarm.evidence+json
+  capabilities:
+    provides:
+      - id: pf.capability.coloured-places.health
+        interface:
+          kind: openapi
+          ref: https://places.minilab.work/openapi.json
+          operation: getHealth
+    consumes: []
+  relationships:
+    - type: antenna
+      required: true
+      contract:
+        id: pf.contract.antenna.coloured-places.observability
+        generation: 1
+    - type: heartime
+      required: true
+      contract:
+        id: pf.contract.heartime.coloured-places.census
+        generation: 1
+    - type: executability
+      required: true
+      contract:
+        id: pf.contract.exec.coloured-places.census
+        generation: 1
+    - type: search
+      required: false
+      contract:
+        id: pf.contract.search.coloured-places
+        generation: 1
+  lifecycle:
+    desiredState: active
+  admission:
+    requirements:
+      - source.exact
+      - identity.recognized
+      - placement.materialized
+      - stores.created
+      - schemas.applied
+      - oauth.configured
+      - antenna.relationship-active
+      - heartime.relationship-active
+      - census.executable
+      - health.verified

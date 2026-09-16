@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Powerfarm Admission Receipt v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": { "const": "powerfarm.specs/v0" },
+    "kind": { "const": "AdmissionReceipt" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "contractId", "generation", "subject", "producer", "recordedAt"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "contractId": { "$ref": "common.schema.json#/$defs/contractId" },
+        "generation": { "type": "integer", "minimum": 1 },
+        "subject": { "$ref": "common.schema.json#/$defs/entityId" },
+        "producer": { "$ref": "common.schema.json#/$defs/entityId" },
+        "recordedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contractDigest", "outcome", "checks"],
+      "properties": {
+        "contractDigest": { "$ref": "common.schema.json#/$defs/digest" },
+        "outcome": {
+          "type": "string",
+          "enum": ["passed", "failed", "partial"]
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/check" }
+        },
+        "materialization": {
+          "type": "object",
+          "properties": {
+            "place": { "$ref": "common.schema.json#/$defs/entityId" },
+            "relativePath": { "$ref": "common.schema.json#/$defs/relativePath" }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "status", "observedAt"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["passed", "failed", "skipped"]
+        },
+        "observedAt": { "type": "string", "format": "date-time" },
+        "message": { "type": "string" },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "$ref": "common.schema.json#/$defs/evidenceRef" },
+              { "$ref": "common.schema.json#/$defs/contentRef" }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

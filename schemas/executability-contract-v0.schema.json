@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Powerfarm Executability Contract v0",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^x-": {}
+  },
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": { "const": "powerfarm.specs/v0" },
+    "kind": { "const": "ExecutabilityContract" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "generation", "subject", "owner"],
+      "properties": {
+        "id": { "$ref": "common.schema.json#/$defs/contractId" },
+        "generation": { "type": "integer", "minimum": 1 },
+        "subject": { "$ref": "common.schema.json#/$defs/entityId" },
+        "owner": { "$ref": "common.schema.json#/$defs/entityId" },
+        "issuedAt": { "type": "string", "format": "date-time" },
+        "summary": { "type": "string", "maxLength": 1000 }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["guards", "policy", "claim", "effect", "verification", "retry", "uncertainty"],
+      "properties": {
+        "guards": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["temporal", "observational"],
+          "properties": {
+            "temporal": { "$ref": "common.schema.json#/$defs/guard" },
+            "observational": { "$ref": "common.schema.json#/$defs/guard" }
+          }
+        },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["triggerMode", "retrigger", "temporalBeforeObservation", "observationBeforeTemporal"],
+          "properties": {
+            "triggerMode": {
+              "type": "string",
+              "enum": ["edge", "level"]
+            },
+            "retrigger": {
+              "type": "string",
+              "enum": ["never", "after-terminal", "per-evidence-change"]
+            },
+            "holdFor": { "$ref": "common.schema.json#/$defs/duration" },
+            "temporalBeforeObservation": {
+              "type": "string",
+              "enum": ["retain", "discard"]
+            },
+            "observationBeforeTemporal": {
+              "type": "string",
+              "enum": ["retain", "discard"]
+            },
+            "expiration": { "$ref": "#/$defs/terminationGuard" },
+            "cancellation": { "$ref": "#/$defs/terminationGuard" }
+          }
+        },
+        "claim": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "keyScope"],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["exclusive", "shared"]
+            },
+            "keyScope": { "const": "activation" },
+            "lease": { "$ref": "common.schema.json#/$defs/duration" },
+            "onLeaseLoss": {
+              "type": "string",
+              "enum": ["verify", "fail", "reacquire"]
+            }
+          }
+        },
+        "effect": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["graph"],
+          "properties": {
+            "graph": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["standard"],
+              "properties": {
+                "standard": {
+                  "const": "open-workflow/1.0.3"
+                },
+                "content": { "$ref": "common.schema.json#/$defs/contentRef" },
+                "artifact": { "$ref": "common.schema.json#/$defs/artifactVersionRef" }
+              },
+              "oneOf": [
+                { "required": ["content"] },
+                { "required": ["artifact"] }
+              ]
+            },
+            "capabilityProfiles": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/materialRef" }
+            },
+            "intent": { "type": "string", "minLength": 1 }
+          }
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required", "onTimeout"],
+          "properties": {
+            "required": { "type": "boolean" },
+            "predicate": { "$ref": "common.schema.json#/$defs/guard" },
+            "timeout": { "$ref": "common.schema.json#/$defs/duration" },
+            "onTimeout": {
+              "type": "string",
+              "enum": ["uncertain", "failed"]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": { "required": { "const": true } },
+                "required": ["required"]
+              },
+              "then": { "required": ["predicate"] }
+            }
+          ]
+        },
+        "retry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["maxAttempts", "strategy"],
+          "properties": {
+            "maxAttempts": { "type": "integer", "minimum": 1 },
+            "strategy": {
+              "type": "string",
+              "enum": ["effect-certainty"]
+            },
+            "backoff": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["initial"],
+              "properties": {
+                "initial": { "$ref": "common.schema.json#/$defs/duration" },
+                "maximum": { "$ref": "common.schema.json#/$defs/duration" },
+                "multiplier": { "type": "number", "minimum": 1 }
+              }
+            }
+          }
+        },
+        "uncertainty": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["onUnknown"],
+          "properties": {
+            "onUnknown": {
+              "type": "string",
+              "enum": ["verify-before-retry", "safe-retry", "do-not-retry"]
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "materialRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["content"],
+          "properties": {
+            "content": { "$ref": "common.schema.json#/$defs/contentRef" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifact"],
+          "properties": {
+            "artifact": { "$ref": "common.schema.json#/$defs/artifactVersionRef" }
+          }
+        }
+      ]
+    },
+    "terminationGuard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["guard"],
+      "properties": {
+        "guard": { "$ref": "common.schema.json#/$defs/guard" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

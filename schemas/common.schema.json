@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Powerfarm Specs v0 Common Types",
+  "$defs": {
+    "entityId": {
+      "type": "string",
+      "pattern": "^pf(?:\\.[a-z0-9][a-z0-9-]*)+$"
+    },
+    "contractId": {
+      "type": "string",
+      "pattern": "^pf\\.contract(?:\\.[a-z0-9][a-z0-9-]*)+$"
+    },
+    "artifactId": {
+      "type": "string",
+      "pattern": "^pf(?:\\.[a-z0-9][a-z0-9-]*)+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "duration": {
+      "type": "string",
+      "pattern": "^P(?=.+)(?:[0-9]+Y)?(?:[0-9]+M)?(?:[0-9]+D)?(?:T(?=.+)(?:[0-9]+H)?(?:[0-9]+M)?(?:[0-9]+(?:\\.[0-9]+)?S)?)?$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[^\\u0000]+$"
+    },
+    "contentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["digest", "mediaType", "size"],
+      "properties": {
+        "digest": { "$ref": "#/$defs/digest" },
+        "mediaType": {
+          "type": "string",
+          "minLength": 3,
+          "pattern": "^[^/\\s]+/[^\\s]+$"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "urls": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "contractRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/contractId" },
+        "generation": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "artifactVersionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifactId", "version"],
+      "properties": {
+        "artifactId": { "$ref": "#/$defs/artifactId" },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "capabilityInterface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["mcp", "openapi", "asyncapi", "wot", "other"]
+        },
+        "ref": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "operation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "predicateRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "contract", "predicate"],
+      "properties": {
+        "provider": { "$ref": "#/$defs/entityId" },
+        "contract": { "$ref": "#/$defs/contractRef" },
+        "predicate": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "expected": {},
+        "maxAge": { "$ref": "#/$defs/duration" }
+      }
+    },
+    "guard": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["literal"],
+          "properties": {
+            "literal": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ref"],
+          "properties": {
+            "ref": { "$ref": "#/$defs/predicateRef" }
+          }
+        }
+      ]
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "provider", "domain"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider": { "$ref": "#/$defs/entityId" },
+        "domain": {
+          "type": "string",
+          "enum": ["temporal", "observational", "execution", "admission", "other"]
+        },
+        "subject": { "$ref": "#/$defs/entityId" },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "contract": { "$ref": "#/$defs/contractRef" },
+        "content": { "$ref": "#/$defs/contentRef" }
+      }
+    },
+    "sourceDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact", "repository", "revision"],
+      "properties": {
+        "artifact": { "$ref": "#/$defs/artifactVersionRef" },
+        "repository": {
+          "type": "string",
+          "format": "uri"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 7
+        },
+        "path": { "$ref": "#/$defs/relativePath" },
+        "snapshot": { "$ref": "#/$defs/contentRef" }
+      }
+    }
+  }
+}
