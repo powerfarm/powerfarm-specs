@@ -111,7 +111,7 @@ A successful planning return references an immutable plan and supplies the new c
 
 When coverage ends without renewal:
 
-- never-delivered work becomes `lapsed`, and work falling due outside coverage is recorded as `skipped`;
+- never-delivered work and planning reviews become `lapsed`, and work falling due outside coverage is recorded as `skipped`;
 - a planning review whose instant was missed while Heartime was not evaluating is recorded as `skipped`, because the fallback now carries that obligation;
 - a `fallback` occurrence, dated at the end of coverage, is emitted through the fallback relationship and re-emitted every `fallback.reviewAfterSeconds` until renewal, supersession, expiry or retirement.
 
