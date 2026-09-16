@@ -109,6 +109,6 @@ x-mandate:
     size: 1025
 x-template:
   content:
-    digest: sha256:8823309e5325d218943a5a08768cc38b688b33ae7f44925e5eeeab04a58ada49
+    digest: sha256:b5d20136fb4130456654b267abe825f5f7dd2271618cdc4b537af79498c9becb
     mediaType: text/plain
-    size: 735
+    size: 894
