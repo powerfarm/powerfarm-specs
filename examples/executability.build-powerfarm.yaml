@@ -1,10 +1,10 @@
 apiVersion: powerfarm.specs/v0
 kind: ExecutabilityContract
 metadata:
-  id: pf.contract.exec.build-powerfarm
+  id: powerfarm.app/contract/exec.build-powerfarm
   generation: 1
-  subject: pf.powerfarm
-  owner: pf.danvoulez
+  subject: powerfarm.app/software/powerfarm
+  owner: powerfarm.app/office/director
   issuedAt: "2026-09-16T10:00:00Z"
   summary: >-
     Continue building Powerfarm under current Direction by extending a verified
@@ -16,9 +16,9 @@ spec:
   guards:
     temporal:
       ref:
-        provider: pf.heartime
+        provider: powerfarm.app/service/heartime
         contract:
-          id: pf.contract.heartime.build-powerfarm
+          id: powerfarm.app/contract/heartime.build-powerfarm
           generation: 1
         predicate: occurrence.due
         parameters:
@@ -80,9 +80,9 @@ spec:
     required: true
     predicate:
       ref:
-        provider: pf.continuity
+        provider: powerfarm.app/sector/continuity
         contract:
-          id: pf.contract.exec.build-powerfarm
+          id: powerfarm.app/contract/exec.build-powerfarm
           generation: 1
         predicate: dataset.persisted-or-contained
         expected: true

@@ -1,19 +1,19 @@
 apiVersion: powerfarm.specs/v0
 kind: ExecutabilityContract
 metadata:
-  id: pf.contract.exec.coloured-places.census
+  id: powerfarm.app/contract/exec.coloured-places.census
   generation: 1
-  subject: pf.coloured-places
-  owner: pf.office.continuity
+  subject: powerfarm.app/app/coloured-places
+  owner: powerfarm.app/office/continuity
   issuedAt: "2026-09-16T05:30:00Z"
   summary: Periodically census recognized applications and record observational evidence.
 spec:
   guards:
     temporal:
       ref:
-        provider: pf.heartime
+        provider: powerfarm.app/service/heartime
         contract:
-          id: pf.contract.heartime.coloured-places.census
+          id: powerfarm.app/contract/heartime.coloured-places.census
           generation: 1
         predicate: recurrence.due
         parameters:
@@ -43,9 +43,9 @@ spec:
     required: true
     predicate:
       ref:
-        provider: pf.antenna
+        provider: powerfarm.app/service/antenna
         contract:
-          id: pf.contract.antenna.coloured-places.observability
+          id: powerfarm.app/contract/antenna.coloured-places.observability
           generation: 1
         predicate: census.observation-recorded
         expected: true

@@ -1,9 +1,10 @@
 # Registry Core v0
 
-**Status:** Draft operational specification  
-**Specification:** Registry Core  
-**Version:** v0  
+**Status:** Draft operational specification
+**Specification:** Registry Core
+**Version:** v0
 **Canonical basis:** PF-03 §§3.2–3.7, 3.12, 3.16; PF-04 Representation Doctrine
+**V0 materialization:** `powerfarm-research-docs` V0-01 (data), V0-03 (rebuild), V0-07 (names)
 
 ## 1. Purpose
 
@@ -11,29 +12,27 @@ The Registry records institutionally recognized assertions.
 
 It answers:
 
-> What does Powerfarm recognize as existing, which exact versions or contract generations are current, and which authorities have been granted?
+> What does Powerfarm recognize as existing, which exact versions and contract generations are current, and who may do what?
 
 It does not answer:
 
 > What is the complete operational state of every Powerfarm system right now?
 
-Operational state belongs to the software that produces and governs it.
-
-The Registry is therefore a service within Identity, not a global application database and not a fourth durable sector.
+Operational state belongs to the software that produces and governs it. The Registry is a service within Identity, not a global application database and not a fourth durable sector.
 
 ## 2. Minimal ontology
 
-The v0 conceptual core is deliberately small:
-
 ```text
+contracts
 entities
 artifacts
 artifact_versions
-contracts
 grants
 ```
 
-This is an ontology, not a promise that every implementation will expose exactly five SQL tables forever. Derived indexes, projections, caches, views, and implementation support tables MAY exist when they do not acquire independent institutional meaning.
+This is an ontology, not a promise of exactly five tables. Derived indexes, views and support tables MAY exist when they acquire no independent institutional meaning.
+
+Every recognized change is also recorded as an act in the act log (§12). The act log records the history of the five concepts; it adds no new kind of institutional meaning.
 
 A new durable Registry concept requires evidence that the existing five cannot faithfully represent the institutional relationship.
 
@@ -42,464 +41,300 @@ A new durable Registry concept requires evidence that the existing five cannot f
 Registry Core MUST NOT become the canonical home for:
 
 - application business records;
-- Antenna receipts, deliveries, or routing history;
+- Antenna observations, receipts, deliveries or routing history;
 - Heartime temporal evidence;
-- Continuity runtime histories, workflow checkpoints, or effect journals;
-- Search indexes or query result caches;
-- Workspace research state;
-- deployment controller state;
-- CI run state;
-- OAuth tokens, sessions, secrets, or provider-specific account-link state;
+- Continuity runtime histories, workflow checkpoints or effect journals;
+- Search indexes or query caches;
+- research working state;
+- deployment controller or CI run state;
+- OAuth tokens, sessions, secrets or provider account-link state;
 - Content Store bytes.
 
 Such state may be discoverable through recognized contracts, but it remains owned by the system whose semantics govern it.
 
-## 4. Entity
+## 4. Names
 
-An `entity` is a stable institutional identity for a thing Powerfarm needs to recognize across changes in implementation or version.
-
-Examples include:
+Every entity, artifact and contract has a name of the form defined by V0-07:
 
 ```text
-pf.identity
-pf.continuity
-pf.antenna
-pf.heartime
-pf.research
-pf.coloured-places
-pf.lab-8gb
-pf.app-park.8gb
-pf.danvoulez
+powerfarm.app/<type>/<name>          entities and artifacts
+powerfarm.app/contract/<name>        contracts
 ```
 
-### 4.1 Entity invariants
+- The type segment is the name of the contract that defines the type.
+- Names are lowercase ASCII, stored without a scheme, never reused and never renamed.
+- A name identifies an institutional thing, never a provider object, a filesystem path or a database row.
+
+## 5. Types come from contracts
+
+Every type column points to a **current contract**:
+
+| column | points to |
+|---|---|
+| `contracts.type` | a Contract Type contract |
+| `entities.type` | an Entity Type contract |
+| `artifacts.type` | an Artifact Type contract |
+| `grants.action` | an Action Type contract |
+
+Rules:
+
+1. A type exists only while a contract defining it is current.
+2. The single exception is the first contract, *Contract Type* (`powerfarm.app/contract/contract-type`), whose type is itself.
+3. Contracts that define types have no subject entity: the definition exists before any entity of that type.
+4. Every other contract names its participants (subject; provider and consumer where the relationship has those roles).
+5. Adding a type is recognizing one contract. It needs no schema change and no deploy.
+
+Each contract generation points to exactly one document (§8.2). A type-defining document carries what the type means:
+
+- a **Contract Type** document carries the JSON Schema that documents of that type must satisfy;
+- an **Entity Type** document declares the name pattern, the rights every entity of the type has, its duties, and its prerogatives (such as holding a mandate);
+- an **Artifact Type** document carries the JSON Schema for content of that type and names any validator that checks what a schema cannot;
+- an **Action Type** document names exactly one institutional authority: OBSERVE, JUDGE, PROPOSE, GENERATE, EXECUTE, ORCHESTRATE, PERSIST or AUTHORIZE.
+
+## 6. Birth
+
+The Registry is born empty and filled only by acts.
+
+1. **The migration creates tables, rules and functions, never rows.**
+2. **The Foundation Act** runs once, on an empty Registry, and is act number 1. It recognizes the minimum needed for someone to hold authority: *Contract Type*, *Entity Type*, the other contract types, the entity types *person* and *office*, the Director's action types, the Director office, the first person, that person's mandate and admission. Then it closes forever.
+3. **Everything else** (other types, entities, artifacts, contracts, grants) is recognized afterwards through the institutional API, one act at a time.
+
+No entity, contract or grant is ever created by a seed.
+
+## 7. Entities and artifacts
+
+### 7.1 Entity
+
+An **entity** is a stable institutional identity for something Powerfarm recognizes across changes of implementation or version.
+
+```text
+powerfarm.app/sector/identity
+powerfarm.app/service/antenna
+powerfarm.app/app/coloured-places
+powerfarm.app/machine/lab-8gb
+powerfarm.app/agent/lab-8gb
+powerfarm.app/office/director
+```
 
 An entity:
 
-- has a stable id;
-- has a kind used for description and tooling;
+- has a stable name (§4) and a type (§5);
 - MAY have a title and summary;
-- MAY be retired;
-- MUST NOT absorb arbitrary operational state merely because that state concerns the entity.
+- MAY be retired, never deleted;
+- MUST NOT absorb arbitrary operational state merely because that state concerns it.
 
-The recommended id form is:
+A type describes and grants the rights its Entity Type contract declares; it grants nothing else.
+
+### 7.2 Artifact
+
+An **artifact** is a stable identity for something that has exact versions: software, capabilities, schemas, datasets, prompts, documents, execution bundles, Minivault items.
 
 ```text
-pf.<segment>[.<segment>...]
+powerfarm.app/software/coloured-places
+powerfarm.app/document/pf-03
+powerfarm.app/program/intake.review
 ```
-
-with lowercase ASCII letters, digits, and hyphens inside segments.
-
-Entity kind is intentionally extensible. Suggested values include `person`, `office`, `app`, `service`, `sector`, `place`, and `machine`.
-
-Kind is descriptive. Authority comes from contracts and grants, not from kind alone.
-
-## 5. Artifact
-
-An `artifact` is a stable semantic identity for something that can have exact versions.
-
-Examples include:
-
-- software;
-- capability profiles;
-- schemas;
-- datasets;
-- prompts;
-- policies;
-- documents;
-- execution bundles;
-- experimental outputs promoted to institutional significance.
 
 The artifact survives its versions.
 
-Example:
+## 8. Versions and contracts
+
+### 8.1 Artifact version
+
+An **artifact version** identifies one exact material version:
 
 ```text
-pf.software.coloured-places
-```
-
-might identify the software artifact while exact revisions are recorded as artifact versions.
-
-Artifact kinds SHOULD remain extensible rather than frozen to an early enum that forces unrelated things into the wrong category.
-
-## 6. Artifact version
-
-An `artifact_version` identifies one exact material version of an artifact.
-
-It SHOULD record enough provenance to locate and verify the exact object, for example:
-
-```text
-artifact id
+artifact name
 version label
-source repository
-source revision
-source path
-content digest
-media type
-size
-recognized_at
-publisher / recognizer
+content digest (sha256), or a manifest digest
+source repository, revision and path, when sourced from source control
+media type and size
+recognized at / by
+superseded at / by
+retired at
 ```
 
-A version MAY be sourced from Git, the Content Store, an external package registry, or another stable source.
+- SHA-256 is Powerfarm's one fingerprint: every digest is `sha256:<lowercase-hex>`.
+- A source reference (repository + revision + path) and a content digest answer different questions and MAY coexist.
+- The Registry never stores the bytes themselves.
+- At most one version of an artifact is current: superseded and retired versions are not.
 
-The Registry MUST NOT require the bytes themselves to be stored in the Registry.
-
-### 6.1 Exactness
-
-When a content digest is present, v0 uses the repository-wide `sha256:<hex>` digest format.
-
-Repository + revision + path identifies source provenance. A content digest identifies exact bytes. They answer different questions and MAY coexist.
-
-### 6.2 Promotion
-
-An immutable object can exist in the Content Store without being a Registry artifact version.
-
-Institutional promotion is explicit:
+**Promotion is explicit.** An object can exist in the Content Store without being recognized:
 
 ```text
-CAS object exists
-      !=
-Powerfarm recognizes an artifact version
+these exact bytes exist          (Content Store)
+        ≠
+Powerfarm recognizes them        (an artifact version or a contract document)
 ```
 
-Promotion creates or links an artifact version and records why/when it became institutionally significant.
+### 8.2 Contract
 
-## 7. Contract
-
-A `contract` records one recognized legitimate relationship or declaration.
-
-Examples include:
-
-- App Contract;
-- Antenna service contract;
-- Heartime temporal relationship;
-- Executability Contract;
-- Search relationship;
-- another future relationship that fits the contract model without requiring a new architectural organ.
-
-### 7.1 Stable id and generation
-
-A contract has a stable id and one or more immutable generations.
+A **contract** records one recognized relationship or definition. It has a stable name and one or more immutable **generations**:
 
 ```text
-contract id          = continuing institutional relationship
+contract name        = the continuing relationship
 contract generation  = one immutable set of recognized terms
 ```
 
-A generation SHOULD contain or reference:
+A generation records:
 
-- contract kind;
-- subject entity;
-- provider and consumer where the relationship has those roles;
-- exact contract document digest;
-- content media type and size when available;
-- issuer / recognizer;
-- effective interval;
-- supersession / retirement state;
-- admission evidence where required.
+- its type (a Contract Type contract);
+- its participants: subject, provider and consumer, where the relationship has them (none for type-defining contracts);
+- the digest, media type and size of its document;
+- its effective interval;
+- recognized at / by;
+- its acceptance receipt, when acceptance is required;
+- supersession and retirement.
 
-### 7.2 Contract bytes
+The Registry verifies the document's digest against the stored bytes before recognizing the generation. A cached copy of the document MUST NOT become a second authority.
 
-The Registry SHOULD record a verifiable reference to the exact contract bytes rather than using a mutable JSON blob as the only source of truth.
+Participants are queryable columns, so topology is discoverable without parsing documents. The document remains authoritative for the full terms.
 
-The preferred boundary is:
+## 9. Grants and authority
 
-```text
-Registry contract row
-   │ semantic identity + recognition
-   ▼
-ContentRef / source reference
-   │ exact material identity
-   ▼
-contract bytes
-```
+### 9.1 Grant
 
-An implementation MAY cache the verified document for query performance. A cache MUST NOT silently become a second authority and MUST be invalidated or reverified when its digest does not match the recognized generation.
-
-### 7.3 Contract participants
-
-For relationships with provider/consumer roles, the Registry SHOULD expose those participants as queryable columns or an equivalent derived projection so topology can be discovered without parsing every document.
-
-The contract document remains authoritative for the full terms.
-
-## 8. Grant
-
-A `grant` is an explicit institutional authority assignment.
-
-It identifies:
+A **grant** is an explicit authority assignment to one entity:
 
 - subject entity;
-- allowed action;
-- optional resource scope;
-- grantor;
-- validity interval;
-- revocation state;
-- optional policy reference or constraints.
+- action (an Action Type contract);
+- optional resource;
+- granted by, and the contract that is its basis;
+- valid from / until;
+- revoked at, and the reason.
 
-A grant is not an OAuth access token.
+A grant is not an OAuth token. Tokens are ephemeral protocol credentials; grants are institutional assertions. Revocation is a new fact and never erases the grant.
 
-OAuth tokens are ephemeral protocol credentials. Grants are institutional authority assertions that may be used by Identity/authorization systems to determine what credentials should permit.
+### 9.2 Computing authority
 
-### 8.1 Time bounds
-
-Grant validity is evaluated using explicit timestamps or equivalent temporal evidence.
-
-A grant SHOULD support:
+Authority is computed at request time from current contracts. Nowhere is a copy of permissions kept.
 
 ```text
-valid_from
-valid_until
-revoked_at
-revoked_reason
+may(entity, action, resource) =
+    rights of the entity's type                 (current Entity Type contract)
+  + powers of the offices the entity holds      (current mandates, if its type may hold one)
+  + the entity's current grants
 ```
 
-Revocation is a new institutional fact. It MUST NOT erase the original grant history.
+- The answer is `true`, `false` or `unknown`. Only `true` passes; `unknown` carries its reason.
+- An agent acting for a person never exceeds that person: the effective rights are the intersection of both.
+- When a contract generation changes, everyone it covers gains or loses the corresponding authority immediately.
 
-## 9. Identity infrastructure versus Registry
+### 9.3 Offices and mandates
 
-Identity contains more than Registry Core.
+An **office** is an entity whose Office contract declares which entity types may hold it and which powers it confers. A **mandate** is a contract that binds one holder to one office for an effective interval: `powerfarm.app/contract/mandate.<office>.<holder>`. The autonomy an office's charter grants per operation class is defined in V0-01 §2.8.
 
-OAuth client registrations, account links, keys, sessions, consent records, token state, passwordless flows, and provider-specific authorization infrastructure MAY exist inside the Identity implementation.
+## 10. Identity infrastructure versus Registry
 
-Those tables do not become Registry Core concepts merely because they live in the same Postgres database.
+Identity contains more than Registry Core: login accounts, OAuth clients, sessions, consent records, passwordless flows, keys.
 
-The durable conceptual split is:
+- The list of people and agents is the Registry's entities. A login account or machine credential is a **binding** to exactly one entity, never a second list.
+- Those tables do not become Registry Core concepts merely because they live in the same database.
 
 ```text
-Identity protocol infrastructure
-  -> authenticate principals and issue/validate credentials
-
-Registry Core
-  -> recognize entities, artifacts, contracts, and grants
+Identity protocol infrastructure  → authenticate keys, bind them to entities, issue credentials
+Registry Core                     → recognize contracts, entities, artifacts and grants; compute may()
 ```
 
-A machine principal MAY map to a Registry entity, but the mapping mechanism is Identity implementation detail.
+## 11. Stores, Search and projections
 
-## 10. Store discovery
+- A store is an entity of type `store`, declared by a store-authority contract that names its owner and what it is authoritative for. No separate stores table is needed.
+- A store catalog MAY be derived for performance. It is reconstructable from recognized contracts and never becomes the authority for ownership.
+- Search MAY query the Registry for recognized things, current contracts and declared stores. It MUST NOT infer authority from data presence or from its own index. If Search disappears, Registry truth remains intact.
 
-Registry Core does not require a `stores` table in v0.
+## 12. The act log
 
-Institutionally relevant stores are declared inside recognized App Contracts.
+Every successful write through the institutional API appends one act:
 
-This preserves the rule:
-
-```text
-store state is local
-store topology is contractual
-```
-
-A Search or operator implementation MAY derive a store catalog by resolving active App Contract generations.
-
-For performance it MAY maintain a projection such as:
-
-```text
-recognized_store_catalog
-```
-
-That projection is derived state. It MUST be reconstructable from recognized App Contracts and MUST NOT become the authority for store ownership or semantic scope.
-
-## 11. Search boundary
-
-Search MAY query the Registry to discover:
-
-- which apps are recognized;
-- which current App Contract generations apply;
-- which stores those contracts declare;
-- which semantic scopes those stores claim authority for;
-- which Search relationships define access.
-
-Search MUST NOT infer authority from data presence or from its own index.
-
-If Search disappears, Registry truth and application truth remain intact.
-
-## 12. Recognition states
-
-Registry implementations MAY expose states such as:
-
-```text
-recognized
-superseded
-retired
-```
-
-`draft` or `proposed` content may exist in source control or the Content Store before recognition. The Registry SHOULD avoid making a proposed contract look active merely because its bytes were uploaded.
-
-A current-state query is a projection over historical generations, not permission to overwrite history.
-
-## 13. Supersession
-
-Recognizing a new current generation of a contract or artifact does not delete the previous generation.
-
-Supersession records:
-
-- what became current;
-- what it superseded;
-- when the boundary became effective.
-
-Historical queries MUST remain able to identify the prior recognized generation.
-
-For contracts, recognition of a new generation and supersession of the old generation SHOULD occur atomically at the Registry boundary when both are part of the same institutional decision.
-
-## 14. Immutability rules
-
-The following material identity fields MUST NOT be silently changed after recognition:
-
-- entity stable id;
-- artifact id;
-- artifact version's material source/digest identity;
-- contract id + generation;
-- contract document digest;
-- contract subject/provider/consumer identities when those fields define the recognized relationship;
-- grant subject/action/resource/grantor for an existing grant record.
-
-Lifecycle fields such as `superseded_at`, `retired_at`, `valid_until`, and `revoked_at` MAY be updated or appended according to implementation, provided the historical transition remains reconstructable.
-
-An implementation SHOULD use database constraints or equivalent mechanisms to make accidental mutation difficult.
-
-## 15. Content Store boundary
-
-The Registry does not assign meaning to content merely because a digest exists.
-
-```text
-Content Store
-  -> these exact bytes exist
-
-Registry
-  -> Powerfarm recognizes these bytes as this artifact version or contract generation
-```
-
-Content Store resolution MUST remain subject to Identity and grant checks when content is not public.
-
-The digest is an identity, not a capability.
-
-## 16. Provenance
-
-Important Registry assertions SHOULD retain provenance sufficient to answer:
-
-```text
-what is asserted?
-who or what asserted/recognized it?
-when did it become current?
-which exact material document or artifact does it refer to?
-what admission / decision evidence justified recognition when required?
-what superseded or retired it?
-```
-
-The Registry need not adopt W3C PROV as its internal schema. PROV-DM is a useful external vocabulary for checking that the model retains entities, activities, agents, derivation, and responsibility where material.
-
-## 17. Registry operations
-
-A conforming Registry Core SHOULD support these semantic operations, whatever the physical API:
-
-### 17.1 Recognize entity
-
-Create a stable institutional entity identity if it does not already exist.
-
-Entity creation alone MUST NOT confer broad authority.
-
-### 17.2 Recognize artifact
-
-Create the stable semantic artifact identity.
-
-### 17.3 Recognize artifact version
-
-Record one exact version and its source/content identity without overwriting earlier versions.
-
-### 17.4 Recognize contract generation
-
-Record one exact contract generation, verify its digest, enforce participant existence, and establish its effective current state.
-
-For App Contracts whose admission requires proof, active recognition MUST require adequate admission evidence.
-
-### 17.5 Supersede / retire
-
-Change current recognized state while preserving prior generations and timestamps.
-
-### 17.6 Grant / revoke authority
-
-Create and revoke explicit institutional grants without deleting history.
-
-## 18. Reference SQL schema
-
-`registry/reference-schema.sql` provides one PostgreSQL reference shape for these semantics.
-
-It is not a live migration and MUST NOT be applied blindly to the current Powerfarm database.
-
-Its purpose is to make invariants concrete enough to inspect, test, and challenge.
-
-The reference schema intentionally excludes:
-
-- Supabase Auth tables;
-- RLS policy implementation;
-- OAuth clients/tokens;
-- runtime execution tables;
-- app data;
-- Content Store blobs;
-- Search indexes.
-
-## 19. Mapping from current Powerfarm Registry
-
-The current implementation contains useful ancestors of the v0 model and also substantial architectural legacy.
-
-The following migration direction is intended:
-
-| Current concept | v0 direction |
+| field | meaning |
 |---|---|
-| `identities` | map stable institutional identities into `entities` where semantically appropriate; keep auth-specific infrastructure separate |
-| `artifacts` | retain concept; expand kinds rather than forcing future artifacts into old enum |
-| `artifact_versions` | retain concept; normalize content digest format and immutable source identity |
-| `artifact_relations` | evaluate case-by-case; dependency/supersession may live in artifact metadata, contracts, or derived graph rather than automatically becoming core |
-| `grants` | retain institutional authority role; separate it clearly from OAuth tokens |
-| `service_contracts` | migrate to general `contracts` with exact immutable contract documents |
-| `service_contract_events` | preserve as migration/history evidence if useful; do not automatically make event ledger a core Registry concept |
-| `runs`, ADK sessions/events/checkpoints/effects | move out of Registry authority; Continuity/runtime-owned state |
-| gadgets/workspace/deployments/CI tables | move to owning systems or retire after caller/data audit |
+| sequence | strictly increasing; the act's name is `powerfarm.app/act/<sequence>` |
+| at | time |
+| actor | the entity that acted, and the person it acted for, if any |
+| action | the action type |
+| target | the name of the thing acted on |
+| content | SHA-256 of the act's content |
+| previous | the hash of the previous act |
+| hash | this act's hash, over a fixed encoding of the fields above, computed by the database |
 
-No destructive migration is implied by this table.
+Properties:
 
-## 20. Strangler migration rule
+- acts are never edited or removed; a correction is a new act;
+- the chain verifies from act 1 to the last act;
+- the act log is the audit, the event stream, and the story: **replaying it in order over the preserved content rebuilds the same Registry** (PF-03 §3.3; V0-03).
 
-The path from the existing database to Registry Core v0 SHOULD be incremental:
+## 13. Recognition states, supersession and immutability
 
-1. inventory live readers/writers and externally depended-on queries;
-2. classify each table as Registry Core, Identity infrastructure, app/runtime state, derived projection, or obsolete;
-3. introduce the new contract representation and recognition path first;
-4. dual-read or project old data only where necessary during migration;
-5. migrate authoritative callers;
-6. preserve or export historical data required for reconstruction;
-7. remove legacy tables only after caller evidence shows they are no longer authoritative.
+States: `recognized`, `superseded`, `retired`. Proposed content may exist in source control or the Content Store before recognition; uploading bytes never makes anything look recognized.
 
-Do not optimize security/performance warnings on tables scheduled for removal merely to make the old shape prettier. Fix issues that are exploitable now, but spend architectural effort on the target boundary.
+Recognizing a new current generation or version never deletes the previous one. Supersession records what became current, what it superseded, and when; historical queries can always identify the prior recognized state. Recognition of a new generation and supersession of the old one happen atomically.
 
-## 21. Security properties
+These fields MUST NOT change after recognition:
+
+- entity, artifact and contract names;
+- an artifact version's source and digest identity;
+- a contract's generation number, document digest and participants;
+- a grant's subject, action, resource and grantor.
+
+Lifecycle fields (`superseded_at`, `retired_at`, `valid_until`, `revoked_at`) change only by acts. Implementations SHOULD use database constraints so that accidental mutation is impossible.
+
+## 14. Content Store boundary
+
+```text
+Content Store   → these exact bytes exist
+Registry        → Powerfarm recognizes these bytes as this artifact version or contract document
+```
+
+Reading non-public content is subject to `may()`. A digest is an identity, not a capability.
+
+## 15. Operations
+
+A conforming Registry Core supports these operations, whatever the physical API:
+
+| operation | effect |
+|---|---|
+| Foundation Act | once, on an empty Registry (§6) |
+| recognize contract generation | verify the document digest and participants; supersede the current generation atomically |
+| inscribe entity | a new entity of an existing type |
+| recognize artifact, recognize artifact version | a new identity; a new exact version, superseding the current one |
+| supersede, retire | change current state; history stays |
+| grant, revoke | an explicit authority, or its revocation |
+| may | compute authority (§9.2) |
+
+Every operation passes through `may()` and records its act.
+
+## 16. Reference implementation
+
+The Registry migration in `powerfarm/minivault` (`supabase/migrations`) is the reference implementation of this specification. Its tests exercise the conformance cases (§18). It excludes Auth tables, OAuth state, runtime tables, application data, Content Store bytes and Search indexes.
+
+## 17. Security properties
 
 A Registry implementation MUST enforce at least:
 
-- authenticated writes;
-- explicit authority to recognize, supersede, retire, grant, or revoke;
-- no secret values in public contract metadata;
-- content digest verification before recognition of referenced immutable material;
-- least privilege on administrative mutation paths;
-- auditable recognition and revocation actions.
+- authenticated writes, all through the institutional API;
+- explicit authority to recognize, supersede, retire, grant or revoke;
+- no secret values in any Registry row or contract document that is not private;
+- digest verification before recognizing referenced content;
+- least privilege on administrative paths;
+- every write recorded as an act.
 
-How this is implemented in Supabase/Postgres, OPA, application code, or another system is an implementation decision.
+## 18. Conformance
 
-## 22. Conformance
+A conforming implementation demonstrates that:
 
-A conforming Registry Core implementation MUST demonstrate that:
-
-- operational application data is not made canonical Registry state;
-- entity/artifact/contract identity remains stable across implementation changes;
+- the migration creates no rows, and a second Foundation Act fails;
+- every type column references a current contract, and a type disappears when its contract is retired;
+- operational application data never becomes Registry state;
+- names stay stable across implementation changes;
 - artifact versions and contract generations are exact and historically addressable;
-- byte identity is distinct from institutional recognition;
+- byte identity is distinct from recognition;
 - contracts are queryable as topology;
-- grants are explicit and time/revocation aware;
-- auth protocol state remains conceptually separate from Registry Core;
-- current-state projections are reconstructable from preserved history;
-- Search or another projection cannot become authority by indexing Registry data;
-- new contract generations supersede rather than rewrite recognized history.
+- grants are explicit and aware of time and revocation;
+- `may()` changes immediately when a contract generation changes;
+- authentication state stays separate from Registry Core;
+- the act log's chain verifies, and replaying it into an empty implementation reproduces the same Registry;
+- no projection can become authority by indexing Registry data.
 
-## 23. Principle
+## 19. Principle
 
-> The Registry should remain deliberately smaller than the systems it describes.
+> The Registry stays deliberately smaller than the systems it describes.

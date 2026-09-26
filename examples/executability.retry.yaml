@@ -1,27 +1,27 @@
 apiVersion: powerfarm.specs/v0
 kind: ExecutabilityContract
 metadata:
-  id: pf.contract.exec.example-retry
+  id: powerfarm.app/contract/exec.example-retry
   generation: 1
-  subject: pf.example-worker
-  owner: pf.office.continuity
+  subject: powerfarm.app/app/example-worker
+  owner: powerfarm.app/office/continuity
   issuedAt: "2026-09-16T05:30:00Z"
   summary: Retry only when the retry time has arrived and the prior effect remains unverified.
 spec:
   guards:
     temporal:
       ref:
-        provider: pf.heartime
+        provider: powerfarm.app/service/heartime
         contract:
-          id: pf.contract.heartime.example-retry
+          id: powerfarm.app/contract/heartime.example-retry
           generation: 1
         predicate: retry-at.reached
         expected: true
     observational:
       ref:
-        provider: pf.antenna
+        provider: powerfarm.app/service/antenna
         contract:
-          id: pf.contract.antenna.example-effect-status
+          id: powerfarm.app/contract/antenna.example-effect-status
           generation: 1
         predicate: effect.verified
         expected: false
@@ -33,9 +33,9 @@ spec:
     expiration:
       guard:
         ref:
-          provider: pf.heartime
+          provider: powerfarm.app/service/heartime
           contract:
-            id: pf.contract.heartime.example-retry
+            id: powerfarm.app/contract/heartime.example-retry
             generation: 1
           predicate: retry-window.expired
           expected: true
@@ -57,9 +57,9 @@ spec:
     required: true
     predicate:
       ref:
-        provider: pf.antenna
+        provider: powerfarm.app/service/antenna
         contract:
-          id: pf.contract.antenna.example-effect-status
+          id: powerfarm.app/contract/antenna.example-effect-status
           generation: 1
         predicate: effect.verified
         expected: true
