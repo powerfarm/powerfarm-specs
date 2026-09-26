@@ -84,7 +84,7 @@
   "optional": [],
   "responsibility": {
     "generation": 1,
-    "id": "pf.contract.exec.build-powerfarm"
+    "id": "powerfarm.app/contract/exec.build-powerfarm"
   },
   "template": {
     "digest": "sha256:b5d20136fb4130456654b267abe825f5f7dd2271618cdc4b537af79498c9becb",

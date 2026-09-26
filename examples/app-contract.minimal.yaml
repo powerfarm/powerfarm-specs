@@ -1,16 +1,16 @@
 apiVersion: powerfarm.specs/v0
 kind: AppContract
 metadata:
-  id: pf.contract.app.example-notes
+  id: powerfarm.app/contract/app.example-notes
   generation: 1
-  subject: pf.example-notes
-  owner: pf.office.software
+  subject: powerfarm.app/app/example-notes
+  owner: powerfarm.app/office/software
   issuedAt: "2026-09-16T05:30:00Z"
   summary: Minimal illustrative application admitted into an App Park.
 spec:
   source:
     artifact:
-      artifactId: pf.software.example-notes
+      artifactId: powerfarm.app/software/example-notes
       version: 0.1.0
       digest: sha256:1111111111111111111111111111111111111111111111111111111111111111
     repository: https://example.invalid/powerfarm/example-notes
@@ -21,21 +21,21 @@ spec:
       mediaType: application/vnd.powerfarm.source-tree+json
       size: 1840
   placement:
-    place: pf.app-park.8gb
+    place: powerfarm.app/machine/lab-8gb
     relativePath: example-notes
   runtime:
     kind: process
     entrypoint: ./bin/example-notes
   authentication:
-    principal: pf.example-notes
+    principal: powerfarm.app/app/example-notes
     oauth:
       required: false
   stateStores:
-    - id: pf.store.example-notes.primary
+    - id: powerfarm.app/store/example-notes.primary
       engine: sqlite
       purpose: Authoritative application notes.
       locator:
-        place: pf.app-park.8gb
+        place: powerfarm.app/machine/lab-8gb
         relativePath: example-notes/state/app.db
       schema:
         version: 1
@@ -51,7 +51,7 @@ spec:
         interval: PT24H
       searchable: true
       sensitivity: internal
-      migrationAuthority: pf.office.software
+      migrationAuthority: powerfarm.app/office/software
   content:
     produces:
       - kind: notes-snapshot

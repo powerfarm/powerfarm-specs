@@ -2,10 +2,10 @@
 
 Operational specifications that make the Powerfarm canon implementable without turning any current implementation into canon.
 
-**Status:** Draft operational specification set  
-**Version:** v0  
-**Primary canonical sources:** PF-03 Powerfarm Operating System v1.2 and PF-04 Intelligence and Technology System v1.1  
-**Effective working date:** 16 September 2026
+**Status:** Draft operational specification set
+**Version:** v0
+**Primary canonical sources:** PF-03 Powerfarm Operating System 1.5 and PF-04 Intelligence and Technology System 1.2
+**V0 materialization:** `powerfarm-research-docs/v0` (V0-00 … V0-07)
 
 ## 1. Role of this repository
 
@@ -41,7 +41,7 @@ This repository has four primary documents:
 | [Registry Core v0](specs/REGISTRY_CORE_v0.md) | Defines the smallest durable institutional model around entities, artifacts, artifact versions, contracts, and grants. |
 | [Implementation Guide v0](IMPLEMENTATION_GUIDE_v0.md) | Defines how conforming implementations materialize the three specifications together without adding architectural meaning. |
 
-Machine-readable schemas, a PostgreSQL reference schema, examples, and conformance cases support these documents. They do not replace the normative prose.
+Machine-readable schemas, examples and conformance cases support these documents. They do not replace the normative prose. The reference implementation of Registry Core is the Registry migration in `powerfarm/minivault`.
 
 ## 3. Specification precedence
 
@@ -153,7 +153,7 @@ A v0 `ContentRef` follows the useful core shape of an OCI content descriptor wit
 
 `digest` establishes material identity. `mediaType` and `size` describe and help verify transfer.
 
-All cross-Powerfarm v0 `ContentRef` values MUST use SHA-256. Implementations MAY maintain additional local digests such as BLAKE3, but a promoted or exchanged v0 content reference MUST be addressable and verifiable by SHA-256.
+All cross-Powerfarm v0 `ContentRef` values MUST use SHA-256, Powerfarm's one fingerprint. A promoted or exchanged content reference is always addressable and verifiable by SHA-256.
 
 Knowing a digest is not authorization to resolve its content.
 
@@ -180,7 +180,7 @@ Powerfarm reuses established standards wherever they can carry the required sema
 | Supply-chain provenance inspiration | SLSA 1.2 and in-toto Attestation Framework 1.0 |
 | General provenance vocabulary inspiration | W3C PROV-DM |
 
-Current Powerfarm implementations also use systems such as Temporal for durable execution and OPA for policy decisions. Those products are implementation choices, not specification identity.
+Runtimes, storage engines and providers are implementation choices. They live in the V0 materialization documents and in implementation repositories, never in these specifications.
 
 OAuth 2.1 remains an active IETF Internet-Draft at the time of this v0 set. Identity implementations that use it MUST pin the concrete draft/profile and related RFCs they actually support rather than treating the moving label `OAuth 2.1` as a stable wire contract.
 
@@ -204,17 +204,18 @@ OAuth 2.1 remains an active IETF Internet-Draft at the time of this v0 set. Iden
 - W3C PROV-DM: https://www.w3.org/TR/prov-dm/
 - OAuth 2.1 draft: https://datatracker.ietf.org/doc/draft-ietf-oauth-v2-1/
 
-### 8.2 Powerfarm implementation evidence reviewed
+### 8.2 Powerfarm sources
 
-The v0 specifications were also checked against current implementation evidence. These sources are informative, not normative:
+These sources are informative, not normative:
 
 - Canonical architecture: `powerfarm-research-docs/PF-03_Powerfarm_Operating_System.md`
 - Technical doctrine: `powerfarm-research-docs/PF-04_Intelligence_and_Technology_System.md`
-- Continuity v2 and its current capability profile: `powerfarm-continuity/README.md` and `spec/continuity-profile.md`
-- Antenna implemented invariants: `powerfarm-antenna/ANTENNA_SPEC.md`
-- Registry ancestry: `powerfarm-identity/supabase/migrations/0001_identity.sql`, `0002_manifest.sql`, and `0003_autoridade.sql`
+- V0 materialization: `powerfarm-research-docs/v0/` (data V0-01, rebuild V0-03, names V0-07)
+- Registry reference implementation: `powerfarm/minivault` (`supabase/migrations`)
+- Continuity: `powerfarm-continuity/README.md` and `spec/continuity-profile.md`
+- Antenna invariants: `powerfarm-antenna/ANTENNA_SPEC.md`
 
-When current implementation contradicts canon, the implementation is migration input, not authority for changing the specification silently.
+When an implementation contradicts canon, the implementation changes, not the specification.
 
 ## 9. Repository structure
 
@@ -225,28 +226,33 @@ powerfarm-specs/
 ├── specs/
 │   ├── APP_CONTRACT_v0.md
 │   ├── EXECUTABILITY_CONTRACT_v0.md
-│   └── REGISTRY_CORE_v0.md
-├── schemas/
-│   ├── common.schema.json
-│   ├── app-contract-v0.schema.json
-│   ├── executability-contract-v0.schema.json
-│   └── admission-receipt-v0.schema.json
-├── registry/
-│   └── reference-schema.sql
-├── examples/
-│   ├── app-contract.minimal.yaml
-│   ├── app-contract.coloured-places.yaml
-│   ├── executability.webhook.yaml
-│   ├── executability.census.yaml
-│   ├── executability.retry.yaml
-│   └── admission-receipt.minimal.yaml
-└── conformance/
-    └── cases.yaml
+│   ├── REGISTRY_CORE_v0.md
+│   ├── HEARTIME_CONTRACT_v0.md
+│   └── ATTENTION_CONTEXT_v0.md
+├── schemas/            common types and one JSON Schema per contract kind
+├── examples/           one or more valid instances per kind
+├── conformance/
+│   └── cases.yaml
+├── profiles/
+│   └── GO.md
+└── tools/
+    └── validate.py     schemas, examples, semantic invariants, catalog, links
 ```
 
 The small tree is intentional. New folders and specification families SHOULD appear only after a real recurring interoperability need exists.
 
-## 10. Change protocol
+## 10. Names
+
+Every entity, artifact and contract id in these specifications, schemas and examples uses the Powerfarm name form (V0-07):
+
+```text
+powerfarm.app/<type>/<name>          entities and artifacts
+powerfarm.app/contract/<name>        contracts
+```
+
+The schemas in `schemas/common.schema.json` enforce it.
+
+## 11. Change protocol
 
 Changes to these specifications use the normal Powerfarm technical change path:
 
@@ -268,7 +274,7 @@ A material spec change MUST state:
 
 A specification change MUST NOT be justified only by implementation convenience if it weakens a canonical invariant.
 
-## 11. Conformance principle
+## 12. Conformance principle
 
 A component is conforming because its observable behavior satisfies a specification, not because it uses a particular library, database, runtime, programming language, or vendor.
 

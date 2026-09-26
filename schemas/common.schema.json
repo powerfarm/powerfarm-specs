@@ -4,15 +4,15 @@
   "$defs": {
     "entityId": {
       "type": "string",
-      "pattern": "^pf(?:\\.[a-z0-9][a-z0-9-]*)+$"
+      "pattern": "^(?!.*\\.\\.)(?!.*--)powerfarm\\.app/(?!contract/)[a-z][a-z0-9-]{0,39}/[a-z0-9](?:[a-z0-9.-]{0,98}[a-z0-9])?$"
     },
     "contractId": {
       "type": "string",
-      "pattern": "^pf\\.contract(?:\\.[a-z0-9][a-z0-9-]*)+$"
+      "pattern": "^(?!.*\\.\\.)(?!.*--)powerfarm\\.app/contract/[a-z0-9](?:[a-z0-9.-]{0,98}[a-z0-9])?$"
     },
     "artifactId": {
       "type": "string",
-      "pattern": "^pf(?:\\.[a-z0-9][a-z0-9-]*)+$"
+      "pattern": "^(?!.*\\.\\.)(?!.*--)powerfarm\\.app/(?!contract/)[a-z][a-z0-9-]{0,39}/[a-z0-9](?:[a-z0-9.-]{0,98}[a-z0-9])?$"
     },
     "digest": {
       "type": "string",

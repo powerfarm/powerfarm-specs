@@ -2,15 +2,15 @@
   "apiVersion": "powerfarm.specs/v0",
   "kind": "HeartimeContract",
   "metadata": {
-    "id": "pf.contract.heartime.build-powerfarm",
+    "id": "powerfarm.app/contract/heartime.build-powerfarm",
     "generation": 1,
-    "subject": "pf.powerfarm",
-    "owner": "pf.danvoulez"
+    "subject": "powerfarm.app/software/powerfarm",
+    "owner": "powerfarm.app/office/director"
   },
   "spec": {
     "obligationId": "continue-building-powerfarm",
     "responsibility": {
-      "id": "pf.contract.exec.build-powerfarm",
+      "id": "powerfarm.app/contract/exec.build-powerfarm",
       "generation": 1
     },
     "recurrence": {
@@ -23,14 +23,14 @@
     "overlap": "defer",
     "reviewAfterSeconds": 300,
     "handoff": {
-      "id": "pf.contract.exec.build-powerfarm",
+      "id": "powerfarm.app/contract/exec.build-powerfarm",
       "generation": 1
     },
     "fallback": {
       "mode": "safe_mode",
       "reviewAfterSeconds": 300,
       "handoff": {
-        "id": "pf.contract.exec.build-powerfarm-recovery",
+        "id": "powerfarm.app/contract/exec.build-powerfarm-recovery",
         "generation": 1
       }
     },
@@ -39,7 +39,7 @@
       "nextPlanningReviewAt": "2026-09-16T20:00:00Z",
       "reviewEverySeconds": 3600,
       "handoff": {
-        "id": "pf.contract.exec.prepare-next-period",
+        "id": "powerfarm.app/contract/exec.prepare-next-period",
         "generation": 1
       }
     }

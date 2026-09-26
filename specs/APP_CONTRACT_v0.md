@@ -60,10 +60,10 @@ Example:
 
 ```yaml
 metadata:
-  id: pf.contract.app.coloured-places
+  id: powerfarm.app/contract/app.coloured-places
   generation: 3
-  subject: pf.coloured-places
-  owner: pf.danvoulez
+  subject: powerfarm.app/app/coloured-places
+  owner: powerfarm.app/office/director
 ```
 
 The contract identifier identifies the continuing institutional relationship. `generation` identifies one immutable set of terms for that relationship.
@@ -109,10 +109,10 @@ A conforming document has this shape:
 apiVersion: powerfarm.specs/v0
 kind: AppContract
 metadata:
-  id: pf.contract.app.example
+  id: powerfarm.app/contract/app.example
   generation: 1
-  subject: pf.example
-  owner: pf.office.example-owner
+  subject: powerfarm.app/app/example
+  owner: powerfarm.app/office/example-owner
 spec:
   source: {}
   placement: {}
@@ -149,7 +149,7 @@ Example:
 ```yaml
 source:
   artifact:
-    artifactId: pf.software.coloured-places
+    artifactId: powerfarm.app/software/coloured-places
     version: 0.5.1
   repository: https://github.com/powerfarm/powerfarm-coloured-places
   revision: 0123456789abcdef0123456789abcdef01234567
@@ -172,7 +172,7 @@ Example:
 
 ```yaml
 placement:
-  place: pf.app-park.8gb
+  place: powerfarm.app/machine/lab-8gb
   relativePath: coloured-places
 ```
 
@@ -214,7 +214,7 @@ Example:
 
 ```yaml
 authentication:
-  principal: pf.coloured-places
+  principal: powerfarm.app/app/coloured-places
   oauth:
     required: true
     profile: powerfarm-identity
@@ -246,7 +246,7 @@ A store declaration contains a stable institutional store id.
 Example:
 
 ```yaml
-- id: pf.store.coloured-places.primary
+- id: powerfarm.app/store/coloured-places.primary
   engine: sqlite
   purpose: Operator projection and observation history
 ```
@@ -259,7 +259,7 @@ A store locator SHOULD use a Place plus a relative path:
 
 ```yaml
 locator:
-  place: pf.app-park.8gb
+  place: powerfarm.app/machine/lab-8gb
   relativePath: coloured-places/state/app.db
 ```
 
@@ -288,7 +288,7 @@ or a recognized artifact version:
 schema:
   version: 3
   artifact:
-    artifactId: pf.schema.coloured-places
+    artifactId: powerfarm.app/schema/coloured-places
     version: 3
 ```
 
@@ -308,8 +308,8 @@ Example:
 
 ```yaml
 authoritativeFor:
-  - pf.scope.place-observation
-  - pf.scope.health-history
+  - place-observation
+  - health-history
 ```
 
 Authority is explicit and SHOULD be narrow enough to be meaningful.
@@ -363,7 +363,7 @@ Example:
 ```yaml
 capabilities:
   provides:
-    - id: pf.capability.coloured-places.health
+    - id: powerfarm.app/capability/coloured-places.health
       interface:
         kind: openapi
         ref: https://places.example.invalid/openapi.json
@@ -387,7 +387,7 @@ relationships:
   - type: antenna
     required: true
     contract:
-      id: pf.contract.antenna.coloured-places.observability
+      id: powerfarm.app/contract/antenna.coloured-places.observability
       generation: 2
 ```
 

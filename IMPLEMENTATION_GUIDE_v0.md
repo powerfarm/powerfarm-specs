@@ -1,8 +1,9 @@
 # Powerfarm Specifications Implementation Guide v0
 
-**Status:** Draft operational guide  
-**Applies to:** App Contract v0, Executability Contract v0, Registry Core v0  
+**Status:** Draft operational guide
+**Applies to:** App Contract v0, Executability Contract v0, Registry Core v0
 **Role:** Procedural glue. This guide does not create a new architectural organ.
+**V0 materialization:** `powerfarm-research-docs` V0-00 … V0-07
 
 ## 1. Purpose
 
@@ -137,27 +138,9 @@ The resolver SHOULD:
 
 Identity is location-independent. Resolution strategy is not.
 
-### 5.2 Local digest compatibility
+### 5.2 One fingerprint
 
-Existing implementations MAY use another digest internally.
-
-For example, current Antenna uses BLAKE3 for its local content-addressed bucket. That is compatible with v0 if a Powerfarm `ContentRef` crossing the application boundary also has a verified SHA-256 identity.
-
-A practical promotion path is:
-
-```text
-local BLAKE3 object
-      ↓
-promote / exchange
-      ↓
-compute SHA-256
-      ↓
-create ContentRef
-      ↓
-optionally record both digests locally
-```
-
-The v0 cross-system digest is SHA-256 so contracts, Registry versions, OCI-like descriptors, source snapshots, and supply-chain attestations share one interoperable identity form.
+Powerfarm uses SHA-256 as its one fingerprint. An implementation that keeps another digest internally MUST expose a verified SHA-256 identity for every object that crosses its boundary. An internal digest never appears in a `ContentRef`.
 
 ### 5.3 Do not inline by reflex
 
@@ -233,11 +216,11 @@ Physical occupancy is evidence, not authority.
 
 ## 7. Store materialization
 
-### 7.1 SQLite default
+### 7.1 Choosing the store
 
-For app-owned operational state, SQLite is the default when it satisfies the workload.
+The App Contract declares the store. No storage engine is a default (PF-03 §3.4); the engine follows the application's contract. SQLite fits single-machine applications well.
 
-A SQLite materializer SHOULD normally configure:
+When SQLite is used, the materializer SHOULD normally configure:
 
 - foreign keys enabled;
 - WAL when compatible with the deployment and durability requirements;
@@ -398,6 +381,7 @@ BEGIN;
 -- insert new exact generation
 -- mark previous generation superseded
 -- record admission receipt reference
+-- append the act (Registry Core §12)
 
 COMMIT;
 ```
@@ -486,11 +470,11 @@ For exclusive execution, the durable uniqueness key is conceptually:
 
 A runtime attempt id MUST NOT replace this logical key.
 
-### 14.3 Current Continuity
+### 14.3 The runtime
 
-The current Continuity implementation delegates durable execution to Temporal. Temporal is a suitable place to implement claim/run recovery if its workflow identity and signal/timer model preserve the v0 activation semantics.
+Continuity compiles executable graphs into immutable ExecutionBundles. In V0 they run on Google ADK, behind the Continuity compiler (V0-02). The runtime must preserve the v0 activation semantics: workflow identity, timers and signals map onto the activation id and the atomic uniqueness key above.
 
-Temporal is not canon. A replacement runtime is conforming if it preserves the same observable semantics.
+No runtime is canon. A replacement runtime is conforming if it preserves the same observable semantics.
 
 ## 15. Transactional outbox
 
@@ -541,9 +525,9 @@ after verification evidence, before terminal state persisted
 
 Recovery must not invent certainty or duplicate irreversible effects.
 
-## 17. OPA / policy engines
+## 17. Policy engines
 
-A policy engine such as OPA may evaluate authorization or semantic policy, but policy decision and enforcement remain distinct.
+A policy engine may evaluate authorization or semantic policy, but policy decision and enforcement remain distinct. Institutional authority itself is computed by the Registry (`may()`, Registry Core §9.2); a policy engine never replaces it.
 
 A conforming integration SHOULD preserve:
 
@@ -665,38 +649,28 @@ remove physical bytes when safe
 
 Historical evidence and content may remain addressable after live retirement.
 
-## 22. Current Powerfarm mapping
-
-This section is informative and expected to change faster than the specs.
+## 22. Powerfarm V0 mapping
 
 ### Identity / Registry
 
-Current implementation: Supabase/PostgreSQL in `powerfarm-identity`.
-
-Target responsibility:
+The Registry, Identity, the Content Store, Minivault and the act log live in one substrate (V0-01). The reference implementation of Registry Core is the Registry migration in `powerfarm/minivault`.
 
 ```text
 shared institutional truth
-entities / artifacts / artifact versions / contracts / grants
+contracts / entities / artifacts / artifact versions / grants + the act log
 +
-separate Identity protocol infrastructure
+separate Identity protocol infrastructure (keyring: logins bound to entities)
 ```
 
 ### Antenna
 
-Current implementation: Rust, SQLite durable record, content-addressed object bucket, durable receipt-before-acknowledge boundary.
-
-Target responsibility: observational evidence and Antenna service relationships.
+Observational evidence. In V0 the observation store is a Postgres database owned by `powerfarm.app/service/antenna`, written by each agent for its own machine (V0-01 §7).
 
 ### Heartime
 
-Current repository exists but implementation is intentionally not yet established.
-
-Target responsibility: durable temporal evidence and temporal predicate evaluation.
+Durable temporal evidence and temporal predicate evaluation. In V0, each agent's fixed schedule stands in for Heartime-issued census obligations.
 
 ### Continuity
-
-Current v2 implementation already follows the target direction:
 
 ```text
 Open Workflow plan
@@ -707,61 +681,20 @@ resolver/compiler
   ↓
 immutable ExecutionBundle
   ↓
-Temporal / OPA / NATS / MCP / WoT / OpenAPI adapters
+runtime adapters (V0: Google ADK)
   ↓
 effect journal + verification
 ```
 
-The spec should tighten this implementation, not force a rewrite for naming purity.
-
 ### Applications
 
-Default: app-owned SQLite unless another store is materially justified.
+The store each App Contract declares.
 
 ### Content Store
 
-No new Powerfarm organ is required. Existing local content-addressed stores and future remote backends can conform behind the `ContentRef`/resolver semantics.
+Immutable bytes named by SHA-256, behind the `ContentRef` and resolver semantics (V0-01 §4). No new Powerfarm organ is required.
 
-## 23. Registry strangler migration
-
-Do not start with destructive SQL.
-
-### 23.1 Classify current tables
-
-Classify each current table as:
-
-```text
-Registry Core
-Identity infrastructure
-Continuity/runtime state
-application-owned state
-derived projection
-historical-only
-obsolete
-```
-
-### 23.2 Introduce target path first
-
-Implement:
-
-1. Registry Core contract recognition;
-2. App Contract validation/admission;
-3. general contracts replacing special-case service-contract authority;
-4. target readers.
-
-Only then remove legacy writers/readers.
-
-### 23.3 Preserve history
-
-Before dropping old runtime or service-contract tables:
-
-- identify live callers;
-- export data needed for history;
-- preserve exact migrations;
-- create explicit mapping or archive notes;
-- prove no remaining authority depends on the old shape.
-
-## 24. Conformance automation
+## 23. Conformance automation
 
 The first conformance harness SHOULD validate:
 
@@ -774,27 +707,27 @@ The first conformance harness SHOULD validate:
 - content digest mismatch fails closed;
 - Executability activation replay does not duplicate exclusive claims;
 - crash/uncertainty cases preserve effect certainty;
-- Registry reference SQL installs in an isolated PostgreSQL test database where available.
+- the Registry migration installs in a throwaway PostgreSQL, creates no rows, and passes its tests.
 
 A future `powerfarm` CLI command MAY expose these checks. Do not build a separate validator service merely because validation exists.
 
-## 25. Implementation order
+## 24. Implementation order
 
 Implement in this order unless evidence justifies otherwise:
 
 ```text
 1. schemas + examples + conformance parser
-2. Registry Core contract/artifact path
-3. App Contract materializer + Admission Receipt
-4. Executability Contract adapter/compiler
-5. Heartime minimal predicate store only when an actual temporal contract needs it
-6. Search discovery from recognized App Contracts
-7. legacy Registry reduction
+2. Registry Core: the migration, the Foundation Act, may(), the act log
+3. the rebuild script and the story (V0-03)
+4. App Contract materializer + Admission Receipt
+5. Executability Contract adapter/compiler
+6. Heartime minimal predicate store only when an actual temporal contract needs it
+7. Search discovery from recognized App Contracts
 ```
 
 This order follows PF-03's architecture freeze rule.
 
-## 26. Engineering standard
+## 25. Engineering standard
 
 All implementation code inherits PF-04.
 
@@ -810,7 +743,7 @@ In particular:
 
 Do not duplicate the PF-04 code standard in this repository. Reference it.
 
-## 27. Final implementation test
+## 26. Final implementation test
 
 Before adding a new table, queue, daemon, database, service, or contract family, ask:
 

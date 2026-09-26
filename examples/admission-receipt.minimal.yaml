@@ -2,10 +2,10 @@ apiVersion: powerfarm.specs/v0
 kind: AdmissionReceipt
 metadata:
   id: 01994f3e-7c00-7b5a-8000-000000000001
-  contractId: pf.contract.app.example-notes
+  contractId: powerfarm.app/contract/app.example-notes
   generation: 1
-  subject: pf.example-notes
-  producer: pf.identity
+  subject: powerfarm.app/app/example-notes
+  producer: powerfarm.app/sector/identity
   recordedAt: "2026-09-16T05:31:00Z"
 spec:
   contractDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -22,10 +22,10 @@ spec:
       status: passed
       observedAt: "2026-09-16T05:30:30Z"
       evidence:
-        - id: store-genesis:pf.store.example-notes.primary
-          provider: pf.example-notes
+        - id: store-genesis:powerfarm.app/store/example-notes.primary
+          provider: powerfarm.app/app/example-notes
           domain: admission
-          subject: pf.example-notes
+          subject: powerfarm.app/app/example-notes
           observedAt: "2026-09-16T05:30:30Z"
     - name: schemas.applied
       status: passed
@@ -34,5 +34,5 @@ spec:
       status: passed
       observedAt: "2026-09-16T05:30:55Z"
   materialization:
-    place: pf.app-park.8gb
+    place: powerfarm.app/machine/lab-8gb
     relativePath: example-notes

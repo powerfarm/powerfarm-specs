@@ -1,10 +1,10 @@
 apiVersion: powerfarm.specs/v0
 kind: ExecutabilityContract
 metadata:
-  id: pf.contract.exec.example-webhook
+  id: powerfarm.app/contract/exec.example-webhook
   generation: 1
-  subject: pf.example-webhook-handler
-  owner: pf.office.software
+  subject: powerfarm.app/app/example-webhook-handler
+  owner: powerfarm.app/office/software
   issuedAt: "2026-09-16T05:30:00Z"
   summary: Execute once for each accepted webhook receipt.
 spec:
@@ -13,9 +13,9 @@ spec:
       literal: true
     observational:
       ref:
-        provider: pf.antenna
+        provider: powerfarm.app/service/antenna
         contract:
-          id: pf.contract.antenna.example-webhook
+          id: powerfarm.app/contract/antenna.example-webhook
           generation: 1
         predicate: receipt.accepted
         parameters:
@@ -44,9 +44,9 @@ spec:
     required: true
     predicate:
       ref:
-        provider: pf.antenna
+        provider: powerfarm.app/service/antenna
         contract:
-          id: pf.contract.antenna.example-webhook
+          id: powerfarm.app/contract/antenna.example-webhook
           generation: 1
         predicate: delivery.observed
         expected: true

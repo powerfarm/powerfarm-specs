@@ -158,9 +158,9 @@ guards:
     literal: true
   observational:
     ref:
-      provider: pf.antenna
+      provider: powerfarm.app/service/antenna
       contract:
-        id: pf.contract.antenna.example-webhook
+        id: powerfarm.app/contract/antenna.example-webhook
         generation: 1
       predicate: receipt.arrived
       parameters:
@@ -348,7 +348,7 @@ effect:
       size: 4812
   capabilityProfiles:
     - artifact:
-        artifactId: pf.capability-profile.service-restart
+        artifactId: powerfarm.app/capability/service-restart
         version: 2
 ```
 
