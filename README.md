@@ -39,6 +39,7 @@ This repository has four primary documents:
 | [App Contract v0](specs/APP_CONTRACT_v0.md) | Defines the root institutional contract by which an application is declared, materialized, proved, and recognized. |
 | [Executability Contract v0](specs/EXECUTABILITY_CONTRACT_v0.md) | Defines the contract that joins temporal evidence, observational evidence, policy, claims, executable graphs, effects, and verification. |
 | [SPEC-01 Registry](SPEC-01_Registry.md) | The four basics (entities, objects, versions, contracts), authority, the Foundation Act and the act log. |
+| [SPEC-02 Names and Addresses](SPEC-02_Names_and_Addresses.md) | The form of every name: things, contracts, versions, acts, bytes and hostnames. |
 | [Implementation Guide v0](IMPLEMENTATION_GUIDE_v0.md) | Defines how conforming implementations materialize the three specifications together without adding architectural meaning. |
 
 Machine-readable schemas, examples and conformance cases support these documents. They do not replace the normative prose. The reference implementation of SPEC-01 is the Registry migration in `powerfarm/minivault`.
@@ -242,14 +243,7 @@ The small tree is intentional. New folders and specification families SHOULD app
 
 ## 10. Names
 
-Every entity, artifact and contract id in these specifications, schemas and examples uses the Powerfarm name form (V0-07):
-
-```text
-powerfarm.app/<type>/<name>          entities and artifacts
-powerfarm.app/contract/<name>        contracts
-```
-
-The schemas in `schemas/common.schema.json` enforce it.
+Every name in these specifications, schemas and examples follows [SPEC-02 Names and Addresses](SPEC-02_Names_and_Addresses.md). The schemas in `schemas/common.schema.json` enforce it.
 
 ## 11. Change protocol
 

@@ -56,7 +56,7 @@ Such state may be discoverable through recognized contracts. It stays owned by t
 | **basic**     | **what it is**                                  | **main fields**                                                                                                                                           |
 |---------------|-------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **entities**  | things that act                                 | name, type, title, summary, created at/by, retired at, reason                                                                                              |
-| **objects**   | things that are acted on                        | name, type, title, summary, created at/by, retired at                                                                                                      |
+| **objects**   | things that are acted on                        | name, type, title, summary, created at/by, retired at, reason                                                                                              |
 | **versions**  | exact bytes of an object                        | object, version label, content digest (or manifest digest), source (repository, revision, path), recognized at/by, superseded at/by, retired at            |
 | **contracts** | every recognized definition and relationship    | name, generation, type, subject, provider, consumer, holds, document digest, effective from/until, acceptance receipt, recognized at/by, superseded at/by, retired at |
 
