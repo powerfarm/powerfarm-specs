@@ -15,8 +15,8 @@
         "id": { "type": "string", "format": "uuid" },
         "contractId": { "$ref": "common.schema.json#/$defs/contractId" },
         "generation": { "type": "integer", "minimum": 1 },
-        "subject": { "$ref": "common.schema.json#/$defs/entityId" },
-        "producer": { "$ref": "common.schema.json#/$defs/entityId" },
+        "subject": { "$ref": "common.schema.json#/$defs/thingId" },
+        "producer": { "$ref": "common.schema.json#/$defs/thingId" },
         "recordedAt": { "type": "string", "format": "date-time" }
       }
     },
@@ -38,7 +38,7 @@
         "materialization": {
           "type": "object",
           "properties": {
-            "place": { "$ref": "common.schema.json#/$defs/entityId" },
+            "place": { "$ref": "common.schema.json#/$defs/thingId" },
             "relativePath": { "$ref": "common.schema.json#/$defs/relativePath" }
           },
           "additionalProperties": false

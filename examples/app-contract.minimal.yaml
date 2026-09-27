@@ -4,13 +4,13 @@ metadata:
   id: powerfarm.app/contract/app.example-notes
   generation: 1
   subject: powerfarm.app/app/example-notes
-  owner: powerfarm.app/office/software
+  owner: powerfarm.app/contract/software
   issuedAt: "2026-09-16T05:30:00Z"
   summary: Minimal illustrative application admitted into an App Park.
 spec:
   source:
-    artifact:
-      artifactId: powerfarm.app/software/example-notes
+    object:
+      objectId: powerfarm.app/software/example-notes
       version: 0.1.0
       digest: sha256:1111111111111111111111111111111111111111111111111111111111111111
     repository: https://example.invalid/powerfarm/example-notes
@@ -51,7 +51,7 @@ spec:
         interval: PT24H
       searchable: true
       sensitivity: internal
-      migrationAuthority: powerfarm.app/office/software
+      migrationAuthority: powerfarm.app/contract/software
   content:
     produces:
       - kind: notes-snapshot

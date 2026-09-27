@@ -35,10 +35,10 @@
           "minimum": 1
         },
         "subject": {
-          "$ref": "common.schema.json#/$defs/entityId"
+          "$ref": "common.schema.json#/$defs/thingId"
         },
         "owner": {
-          "$ref": "common.schema.json#/$defs/entityId"
+          "$ref": "common.schema.json#/$defs/ownerId"
         }
       }
     },

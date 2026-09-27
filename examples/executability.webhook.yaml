@@ -4,7 +4,7 @@ metadata:
   id: powerfarm.app/contract/exec.example-webhook
   generation: 1
   subject: powerfarm.app/app/example-webhook-handler
-  owner: powerfarm.app/office/software
+  owner: powerfarm.app/contract/software
   issuedAt: "2026-09-16T05:30:00Z"
   summary: Execute once for each accepted webhook receipt.
 spec:

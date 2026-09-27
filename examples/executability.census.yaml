@@ -4,7 +4,7 @@ metadata:
   id: powerfarm.app/contract/exec.coloured-places.census
   generation: 1
   subject: powerfarm.app/app/coloured-places
-  owner: powerfarm.app/office/continuity
+  owner: powerfarm.app/contract/continuity
   issuedAt: "2026-09-16T05:30:00Z"
   summary: Periodically census recognized applications and record observational evidence.
 spec:

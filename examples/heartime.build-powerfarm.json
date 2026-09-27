@@ -5,7 +5,7 @@
     "id": "powerfarm.app/contract/heartime.build-powerfarm",
     "generation": 1,
     "subject": "powerfarm.app/software/powerfarm",
-    "owner": "powerfarm.app/office/director"
+    "owner": "powerfarm.app/contract/director"
   },
   "spec": {
     "obligationId": "continue-building-powerfarm",

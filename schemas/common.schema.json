@@ -2,17 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Powerfarm Specs v0 Common Types",
   "$defs": {
-    "entityId": {
+    "thingId": {
+      "description": "An entity or an object: powerfarm.app/<type>/<name> (V0-07).",
       "type": "string",
       "pattern": "^(?!.*\\.\\.)(?!.*--)powerfarm\\.app/(?!contract/)[a-z][a-z0-9-]{0,39}/[a-z0-9](?:[a-z0-9.-]{0,98}[a-z0-9])?$"
     },
     "contractId": {
       "type": "string",
       "pattern": "^(?!.*\\.\\.)(?!.*--)powerfarm\\.app/contract/[a-z0-9](?:[a-z0-9.-]{0,98}[a-z0-9])?$"
-    },
-    "artifactId": {
-      "type": "string",
-      "pattern": "^(?!.*\\.\\.)(?!.*--)powerfarm\\.app/(?!contract/)[a-z][a-z0-9-]{0,39}/[a-z0-9](?:[a-z0-9.-]{0,98}[a-z0-9])?$"
     },
     "digest": {
       "type": "string",
@@ -49,6 +46,10 @@
         }
       }
     },
+    "ownerId": {
+      "description": "Who answers for something: an entity, or the office contract whose holder does.",
+      "anyOf": [{ "$ref": "#/$defs/thingId" }, { "$ref": "#/$defs/contractId" }]
+    },
     "contractRef": {
       "type": "object",
       "additionalProperties": false,
@@ -61,12 +62,13 @@
         }
       }
     },
-    "artifactVersionRef": {
+    "versionRef": {
+      "description": "One exact version of an object.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["artifactId", "version"],
+      "required": ["objectId", "version"],
       "properties": {
-        "artifactId": { "$ref": "#/$defs/artifactId" },
+        "objectId": { "$ref": "#/$defs/thingId" },
         "version": {
           "type": "string",
           "minLength": 1
@@ -98,7 +100,7 @@
       "additionalProperties": false,
       "required": ["provider", "contract", "predicate"],
       "properties": {
-        "provider": { "$ref": "#/$defs/entityId" },
+        "provider": { "$ref": "#/$defs/thingId" },
         "contract": { "$ref": "#/$defs/contractRef" },
         "predicate": {
           "type": "string",
@@ -141,12 +143,12 @@
           "type": "string",
           "minLength": 1
         },
-        "provider": { "$ref": "#/$defs/entityId" },
+        "provider": { "$ref": "#/$defs/thingId" },
         "domain": {
           "type": "string",
           "enum": ["temporal", "observational", "execution", "admission", "other"]
         },
-        "subject": { "$ref": "#/$defs/entityId" },
+        "subject": { "$ref": "#/$defs/thingId" },
         "observedAt": {
           "type": "string",
           "format": "date-time"
@@ -158,9 +160,9 @@
     "sourceDescriptor": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["artifact", "repository", "revision"],
+      "required": ["object", "repository", "revision"],
       "properties": {
-        "artifact": { "$ref": "#/$defs/artifactVersionRef" },
+        "object": { "$ref": "#/$defs/versionRef" },
         "repository": {
           "type": "string",
           "format": "uri"

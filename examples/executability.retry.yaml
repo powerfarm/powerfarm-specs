@@ -4,7 +4,7 @@ metadata:
   id: powerfarm.app/contract/exec.example-retry
   generation: 1
   subject: powerfarm.app/app/example-worker
-  owner: powerfarm.app/office/continuity
+  owner: powerfarm.app/contract/continuity
   issuedAt: "2026-09-16T05:30:00Z"
   summary: Retry only when the retry time has arrived and the prior effect remains unverified.
 spec:
