@@ -41,6 +41,7 @@ This repository has four primary documents:
 | [SPEC-01 Registry](SPEC-01_Registry.md) | The four basics (entities, objects, versions, contracts), authority, the Foundation Act and the act log. |
 | [SPEC-02 Names and Addresses](SPEC-02_Names_and_Addresses.md) | The form of every name: things, contracts, versions, acts, bytes and hostnames. |
 | [SPEC-03 Identity and Content](SPEC-03_Identity_and_Content.md) | The keyring, sign-in and its gates, the Content Store, digests and content references, and secret references. |
+| [SPEC-04 Minivault](SPEC-04_Minivault.md) | What promoted things mean: kinds, canonical revisions, relations, operations, review of effects, and the kernel's reasoning. |
 | [Implementation Guide v0](IMPLEMENTATION_GUIDE_v0.md) | Defines how conforming implementations materialize the three specifications together without adding architectural meaning. |
 
 Machine-readable schemas, examples and conformance cases support these documents. They do not replace the normative prose. The reference implementation of SPEC-01 is the Registry migration in `powerfarm/minivault`.
