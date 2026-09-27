@@ -38,10 +38,10 @@ This repository has four primary documents:
 |---|---|
 | [App Contract v0](specs/APP_CONTRACT_v0.md) | Defines the root institutional contract by which an application is declared, materialized, proved, and recognized. |
 | [Executability Contract v0](specs/EXECUTABILITY_CONTRACT_v0.md) | Defines the contract that joins temporal evidence, observational evidence, policy, claims, executable graphs, effects, and verification. |
-| [Registry Core v0](specs/REGISTRY_CORE_v0.md) | Defines the smallest durable institutional model around entities, artifacts, artifact versions, contracts, and grants. |
+| [SPEC-01 Registry](SPEC-01_Registry.md) | The four basics (entities, objects, versions, contracts), authority, the Foundation Act and the act log. |
 | [Implementation Guide v0](IMPLEMENTATION_GUIDE_v0.md) | Defines how conforming implementations materialize the three specifications together without adding architectural meaning. |
 
-Machine-readable schemas, examples and conformance cases support these documents. They do not replace the normative prose. The reference implementation of Registry Core is the Registry migration in `powerfarm/minivault`.
+Machine-readable schemas, examples and conformance cases support these documents. They do not replace the normative prose. The reference implementation of SPEC-01 is the Registry migration in `powerfarm/minivault`.
 
 ## 3. Specification precedence
 
@@ -226,7 +226,6 @@ powerfarm-specs/
 ├── specs/
 │   ├── APP_CONTRACT_v0.md
 │   ├── EXECUTABILITY_CONTRACT_v0.md
-│   ├── REGISTRY_CORE_v0.md
 │   ├── HEARTIME_CONTRACT_v0.md
 │   └── ATTENTION_CONTEXT_v0.md
 ├── schemas/            common types and one JSON Schema per contract kind

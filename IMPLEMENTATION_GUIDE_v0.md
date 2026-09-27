@@ -1,7 +1,7 @@
 # Powerfarm Specifications Implementation Guide v0
 
 **Status:** Draft operational guide
-**Applies to:** App Contract v0, Executability Contract v0, Registry Core v0
+**Applies to:** App Contract v0, Executability Contract v0, SPEC-01 Registry
 **Role:** Procedural glue. This guide does not create a new architectural organ.
 **V0 materialization:** `powerfarm-research-docs` V0-00 … V0-07
 
@@ -31,7 +31,7 @@ A useful implementation model has three durable planes and one temporary working
 
 ```text
 INSTITUTIONAL PLANE
-Identity · Registry · Contracts · Grants
+Identity · Registry · Contracts
 meaning / recognition / authority
 
 CONTENT PLANE
@@ -57,7 +57,7 @@ A minimal v0 implementation needs:
 1. a contract parser and JSON Schema validator;
 2. RFC 8785 canonicalization and SHA-256 digesting;
 3. a Content Store resolver capable of verifying `ContentRef` values;
-4. Registry operations for entities, artifacts, artifact versions, contracts, and grants;
+4. the Registry's API (SPEC-01 §7);
 5. an App Contract materializer that can create/verify placement and local stores;
 6. an admission receipt producer;
 7. an Executability Contract compiler or adapter into Continuity;
@@ -285,27 +285,11 @@ continue admission proof
 
 A failed local migration SHOULD leave the prior recognized app materialization recoverable.
 
-## 8. Authentication and grants
+## 8. Authentication and authority
 
-The app's machine principal is configured through Identity.
+The app's machine principal is configured through Identity: its keys are bound to the app entity (SPEC-03). Its authority comes from contracts and is computed by the Registry (SPEC-01 §5).
 
-Do not put runtime credentials inside App Contracts or Registry contract bytes.
-
-A practical flow is:
-
-```text
-App Contract principal
-   ↓
-Identity implementation
-   ↓
-client/key/workload binding
-   ↓
-Registry grants
-   ↓
-credential permits actions consistent with grants
-```
-
-Grant decisions and OAuth token issuance MAY be implemented in the same service. Their persistent concepts remain distinct.
+Do not put runtime credentials inside App Contracts or Registry contract documents.
 
 OAuth 2.1 is still a moving IETF draft in 2026. Pin actual protocol behavior and related RFCs in the Identity implementation rather than storing the phrase `OAuth 2.1` as if it were a fully stable wire version.
 
@@ -368,27 +352,9 @@ A failed or partial receipt MAY also be preserved when useful for recovery or le
 
 Final recognition policy decides which outcomes are acceptable.
 
-## 11. Registry recognition transaction
+## 11. Registry recognition
 
-Where the Registry is PostgreSQL, active recognition of a new contract generation and supersession of the previous current generation SHOULD be done in one local database transaction.
-
-Conceptually:
-
-```sql
-BEGIN;
-
--- verify no conflicting current generation / lock relationship
--- insert new exact generation
--- mark previous generation superseded
--- record admission receipt reference
--- append the act (Registry Core §12)
-
-COMMIT;
-```
-
-The exact SQL MAY differ.
-
-PostgreSQL unique constraints and `INSERT ... ON CONFLICT` can provide useful atomicity for idempotent recognition, but the semantic key must be chosen correctly. Do not use upsert as a substitute for thinking about immutable generation history.
+Recognition, supersession and the act that records them happen in one transaction, through the Registry's API (SPEC-01 §§7–8).
 
 ## 12. Executability compilation
 
@@ -653,11 +619,11 @@ Historical evidence and content may remain addressable after live retirement.
 
 ### Identity / Registry
 
-The Registry, Identity, the Content Store, Minivault and the act log live in one substrate (V0-01). The reference implementation of Registry Core is the Registry migration in `powerfarm/minivault`.
+The Registry, Identity, the Content Store, Minivault and the act log live in one substrate (V0-01). The reference implementation of SPEC-01 is the Registry migration in `powerfarm/minivault`.
 
 ```text
 shared institutional truth
-contracts / entities / artifacts / artifact versions / grants + the act log
+entities / objects / versions / contracts + the act log
 +
 separate Identity protocol infrastructure (keyring: logins bound to entities)
 ```
@@ -717,7 +683,7 @@ Implement in this order unless evidence justifies otherwise:
 
 ```text
 1. schemas + examples + conformance parser
-2. Registry Core: the migration, the Foundation Act, may(), the act log
+2. SPEC-01 Registry: the migration, the Foundation Act, may(), the act log
 3. the rebuild script and the story (V0-03)
 4. App Contract materializer + Admission Receipt
 5. Executability Contract adapter/compiler

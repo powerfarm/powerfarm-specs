@@ -52,14 +52,14 @@ cases:
   - id: REG-001
     area: registry
     title: Content existence does not imply recognition
-    given: A valid CAS object exists with a known digest but no Registry artifact version or contract refers to it.
-    expect: The object has material identity but no institutional meaning solely from existence.
+    given: Content exists in the Content Store with a known digest, but no version or contract refers to it.
+    expect: The content has material identity but no institutional meaning solely from existence.
 
   - id: REG-002
     area: registry
     title: Digest mismatch rejects content resolution
     given: A ContentRef expects digest A but the fetched bytes hash to B.
-    expect: Resolution fails and the bytes are not returned as object A.
+    expect: Resolution fails and the bytes are not returned as content A.
 
   - id: REG-003
     area: registry
@@ -69,13 +69,13 @@ cases:
 
   - id: REG-004
     area: registry
-    title: Grant revocation preserves history
-    given: A current grant is revoked.
-    expect: The grant remains addressable with revocation time and reason; it is not deleted to represent revocation.
+    title: Retiring a permission preserves history
+    given: A current contract that gives powers to its subject is retired.
+    expect: The contract remains addressable with its retirement act; the subject loses those powers at once, and nothing is deleted.
 
   - id: REG-005
     area: registry
-    title: Search index cannot grant authority
+    title: Search index cannot create authority
     given: A Search projection contains a stale record not present in current Registry recognition.
     expect: Search may return the stale projection with provenance but MUST NOT elevate it to current institutional authority.
 
