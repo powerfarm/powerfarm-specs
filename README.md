@@ -40,6 +40,7 @@ This repository has four primary documents:
 | [Executability Contract v0](specs/EXECUTABILITY_CONTRACT_v0.md) | Defines the contract that joins temporal evidence, observational evidence, policy, claims, executable graphs, effects, and verification. |
 | [SPEC-01 Registry](SPEC-01_Registry.md) | The four basics (entities, objects, versions, contracts), authority, the Foundation Act and the act log. |
 | [SPEC-02 Names and Addresses](SPEC-02_Names_and_Addresses.md) | The form of every name: things, contracts, versions, acts, bytes and hostnames. |
+| [SPEC-03 Identity and Content](SPEC-03_Identity_and_Content.md) | The keyring, sign-in and its gates, the Content Store, digests and content references, and secret references. |
 | [Implementation Guide v0](IMPLEMENTATION_GUIDE_v0.md) | Defines how conforming implementations materialize the three specifications together without adding architectural meaning. |
 
 Machine-readable schemas, examples and conformance cases support these documents. They do not replace the normative prose. The reference implementation of SPEC-01 is the Registry migration in `powerfarm/minivault`.
@@ -112,51 +113,7 @@ Continuity executable structure has graph semantics. `powerfarm-specs` does not 
 
 ## 7. Serialization and identity
 
-### 7.1 JSON data model
-
-The normative machine data model for v0 contracts is JSON.
-
-YAML MAY be used as an authoring syntax if it parses losslessly into the JSON data model accepted by the relevant JSON Schema. YAML-specific scalar types that cannot be represented as ordinary JSON values are not conforming contract values.
-
-Authors SHOULD quote timestamps, revisions that look numeric, and other scalars when YAML implicit typing could change the intended JSON type. A contract digest is over the parsed JSON value, never over YAML presentation details.
-
-### 7.2 Validation
-
-Schemas use **JSON Schema Draft 2020-12**.
-
-Schema validation establishes structural conformance only. Semantic conformance also includes cross-object rules, authority checks, uniqueness, graph validity, materialization evidence, and runtime behavior that JSON Schema alone cannot establish.
-
-### 7.3 Contract digest
-
-When a Powerfarm contract requires a material digest, implementations MUST:
-
-1. parse the authoring representation into the JSON data model;
-2. validate it against the applicable schema;
-3. canonicalize that JSON value using RFC 8785 JSON Canonicalization Scheme;
-4. calculate SHA-256 over the canonical UTF-8 bytes;
-5. represent the result as `sha256:<lowercase-hex>`.
-
-Values participating in this procedure MUST be representable under RFC 8785 canonicalization. Schema authors SHOULD use strings for identifiers and exact quantities when JSON number normalization could otherwise change intended semantics.
-
-The digest MUST NOT be embedded as a field whose value participates in its own digest. The Registry records the recognized digest for a contract generation.
-
-### 7.4 Content references
-
-A v0 `ContentRef` follows the useful core shape of an OCI content descriptor without requiring the object to live in an OCI registry:
-
-```json
-{
-  "digest": "sha256:...",
-  "mediaType": "application/json",
-  "size": 18293
-}
-```
-
-`digest` establishes material identity. `mediaType` and `size` describe and help verify transfer.
-
-All cross-Powerfarm v0 `ContentRef` values MUST use SHA-256, Powerfarm's one fingerprint. A promoted or exchanged content reference is always addressable and verifiable by SHA-256.
-
-Knowing a digest is not authorization to resolve its content.
+Contracts are JSON; digests follow RFC 8785 and SHA-256; content is referenced by `ContentRef`. All three are defined in [SPEC-03 Identity and Content](SPEC-03_Identity_and_Content.md) §7.
 
 ## 8. External standards profile
 
