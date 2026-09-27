@@ -4,7 +4,7 @@ metadata:
   id: powerfarm.app/contract/exec.build-powerfarm
   generation: 1
   subject: powerfarm.app/software/powerfarm
-  owner: powerfarm.app/office/director
+  owner: powerfarm.app/contract/director
   issuedAt: "2026-09-16T10:00:00Z"
   summary: >-
     Continue building Powerfarm under current Direction by extending a verified

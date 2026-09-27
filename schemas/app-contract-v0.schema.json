@@ -17,8 +17,8 @@
       "properties": {
         "id": { "$ref": "common.schema.json#/$defs/contractId" },
         "generation": { "type": "integer", "minimum": 1 },
-        "subject": { "$ref": "common.schema.json#/$defs/entityId" },
-        "owner": { "$ref": "common.schema.json#/$defs/entityId" },
+        "subject": { "$ref": "common.schema.json#/$defs/thingId" },
+        "owner": { "$ref": "common.schema.json#/$defs/ownerId" },
         "issuedAt": { "type": "string", "format": "date-time" },
         "summary": { "type": "string", "maxLength": 1000 }
       }
@@ -34,7 +34,7 @@
           "additionalProperties": false,
           "required": ["place", "relativePath"],
           "properties": {
-            "place": { "$ref": "common.schema.json#/$defs/entityId" },
+            "place": { "$ref": "common.schema.json#/$defs/thingId" },
             "relativePath": { "$ref": "common.schema.json#/$defs/relativePath" },
             "constraints": {
               "type": "object"
@@ -47,7 +47,7 @@
           "properties": {
             "kind": { "type": "string", "minLength": 1 },
             "entrypoint": { "type": "string", "minLength": 1 },
-            "healthCapability": { "$ref": "common.schema.json#/$defs/entityId" },
+            "healthCapability": { "$ref": "common.schema.json#/$defs/thingId" },
             "environmentProfile": { "type": "string", "minLength": 1 }
           }
         },
@@ -55,7 +55,7 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "principal": { "$ref": "common.schema.json#/$defs/entityId" },
+            "principal": { "$ref": "common.schema.json#/$defs/ownerId" },
             "oauth": {
               "type": "object",
               "additionalProperties": false,
@@ -147,7 +147,7 @@
       "additionalProperties": false,
       "required": ["id", "engine", "purpose", "locator", "schema", "authoritativeFor", "durability", "searchable", "sensitivity"],
       "properties": {
-        "id": { "$ref": "common.schema.json#/$defs/entityId" },
+        "id": { "$ref": "common.schema.json#/$defs/thingId" },
         "engine": { "type": "string", "minLength": 1 },
         "purpose": { "type": "string", "minLength": 1 },
         "locator": {
@@ -155,7 +155,7 @@
           "additionalProperties": false,
           "required": ["relativePath"],
           "properties": {
-            "place": { "$ref": "common.schema.json#/$defs/entityId" },
+            "place": { "$ref": "common.schema.json#/$defs/thingId" },
             "relativePath": { "$ref": "common.schema.json#/$defs/relativePath" }
           }
         },
@@ -171,13 +171,13 @@
               ]
             },
             "content": { "$ref": "common.schema.json#/$defs/contentRef" },
-            "artifact": { "$ref": "common.schema.json#/$defs/artifactVersionRef" },
+            "object": { "$ref": "common.schema.json#/$defs/versionRef" },
             "migrationDigest": { "$ref": "common.schema.json#/$defs/digest" },
             "genesisDigest": { "$ref": "common.schema.json#/$defs/digest" }
           },
           "anyOf": [
             { "required": ["content"] },
-            { "required": ["artifact"] },
+            { "required": ["object"] },
             { "required": ["migrationDigest"] }
           ]
         },
@@ -207,7 +207,7 @@
           "type": "string",
           "enum": ["public", "internal", "confidential", "restricted"]
         },
-        "migrationAuthority": { "$ref": "common.schema.json#/$defs/entityId" }
+        "migrationAuthority": { "$ref": "common.schema.json#/$defs/ownerId" }
       }
     },
     "contentClass": {
@@ -220,7 +220,7 @@
           "type": "string",
           "pattern": "^[^/\\s]+/[^\\s]+$"
         },
-        "schema": { "$ref": "common.schema.json#/$defs/artifactVersionRef" }
+        "schema": { "$ref": "common.schema.json#/$defs/versionRef" }
       }
     },
     "capability": {
@@ -228,9 +228,9 @@
       "additionalProperties": false,
       "required": ["id", "interface"],
       "properties": {
-        "id": { "$ref": "common.schema.json#/$defs/entityId" },
+        "id": { "$ref": "common.schema.json#/$defs/thingId" },
         "interface": { "$ref": "common.schema.json#/$defs/capabilityInterface" },
-        "profile": { "$ref": "common.schema.json#/$defs/artifactVersionRef" }
+        "profile": { "$ref": "common.schema.json#/$defs/versionRef" }
       }
     },
     "relationship": {

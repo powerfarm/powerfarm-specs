@@ -17,8 +17,8 @@
       "properties": {
         "id": { "$ref": "common.schema.json#/$defs/contractId" },
         "generation": { "type": "integer", "minimum": 1 },
-        "subject": { "$ref": "common.schema.json#/$defs/entityId" },
-        "owner": { "$ref": "common.schema.json#/$defs/entityId" },
+        "subject": { "$ref": "common.schema.json#/$defs/thingId" },
+        "owner": { "$ref": "common.schema.json#/$defs/ownerId" },
         "issuedAt": { "type": "string", "format": "date-time" },
         "summary": { "type": "string", "maxLength": 1000 }
       }
@@ -94,11 +94,11 @@
                   "const": "open-workflow/1.0.3"
                 },
                 "content": { "$ref": "common.schema.json#/$defs/contentRef" },
-                "artifact": { "$ref": "common.schema.json#/$defs/artifactVersionRef" }
+                "object": { "$ref": "common.schema.json#/$defs/versionRef" }
               },
               "oneOf": [
                 { "required": ["content"] },
-                { "required": ["artifact"] }
+                { "required": ["object"] }
               ]
             },
             "capabilityProfiles": {
@@ -181,9 +181,9 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["artifact"],
+          "required": ["object"],
           "properties": {
-            "artifact": { "$ref": "common.schema.json#/$defs/artifactVersionRef" }
+            "object": { "$ref": "common.schema.json#/$defs/versionRef" }
           }
         }
       ]

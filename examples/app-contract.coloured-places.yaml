@@ -6,13 +6,13 @@ metadata:
   id: powerfarm.app/contract/app.coloured-places
   generation: 1
   subject: powerfarm.app/app/coloured-places
-  owner: powerfarm.app/office/director
+  owner: powerfarm.app/contract/director
   issuedAt: "2026-09-16T05:30:00Z"
   summary: Coloured Places operator projection over recognized population and evidence.
 spec:
   source:
-    artifact:
-      artifactId: powerfarm.app/software/coloured-places
+    object:
+      objectId: powerfarm.app/software/coloured-places
       version: 0.5.1
       digest: sha256:4444444444444444444444444444444444444444444444444444444444444444
     repository: https://github.com/powerfarm/powerfarm-coloured-places
