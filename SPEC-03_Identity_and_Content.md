@@ -212,6 +212,17 @@ A conforming implementation demonstrates that:
 | content bytes                | a private Supabase Storage bucket, insert only; the key is the digest                                                      |
 | integrity sweep              | a scheduled job (`pg_cron`)                                                                                                |
 
+Auth settings of the project:
+
+| **setting**                        | **value**                                                                                       |
+|------------------------------------|-------------------------------------------------------------------------------------------------|
+| Site URL                           | `https://id.powerfarm.app`                                                                      |
+| Redirect URLs                      | `https://id.powerfarm.app/**`, `https://vault.powerfarm.app/**`, `https://places.powerfarm.app/**`; one per service in SPEC-02 §7.2, never a wildcard host |
+| Passkeys: relying party            | ID `powerfarm.app`; origin `https://id.powerfarm.app`; display name `Powerfarm`                  |
+| OAuth server                       | enabled; consent at `https://id.powerfarm.app/oauth/consent`                                    |
+| Dynamic OAuth apps                 | enabled, so apps' clients are provisioned by script. A client registered this way is refused by the API until its key is bound to an app entity (§5) |
+| Auth hooks                         | *Before User Created* and *Custom Access Token*, added after the Registry migration is applied; never before, or they refuse every sign-up |
+
 # 12. Current limits
 
 - The Supabase OAuth 2.1 server is in beta.
